@@ -25,13 +25,11 @@ class Manufacturer_Home (sge.dsp.Room):
     def event_mouse_button_press(self, button):
         x_pos = sge.mouse.get_x()
         y_pos = sge.mouse.get_y()
-        lay = []
         collied_objects = sge.collision.rectangle(x_pos, y_pos, 0, 0)
         for obj in collied_objects:
-            background_manufacturer = sge.gfx.Background(lay, sge.gfx.Color("white"))
-            Man_Room = airline_manufacturer.Manufacturer(selected_manufacturer=obj.sprite.name, background=background_manufacturer)
+            Man_Room = airline_manufacturer.create_room(obj.sprite.name)
             globally_stuff.room_list.append(Man_Room)
-            Man_Room.start(transition="iris_out", transition_time=1000, transition_arg=(x_pos, y_pos))
+            Man_Room.start(transition="iris_out", transition_time=500, transition_arg=(x_pos, y_pos))
 
 def create_room():
     #Sprites
