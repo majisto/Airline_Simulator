@@ -12,10 +12,10 @@ class Game(sge.dsp.Game):
 
     def event_key_press(self, key, char):
         if key == "s":
-            print self.current_room.name
+            print "Current room is: {0}" .format(self.current_room.name)
 
 if __name__ == '__main__':
-    Airline_Game = Game(width=800, height=600, fps=120, window_text="Airline_Simulator", grab_input=True)
+    Airline_Game = Game(width=800, height=600, fps=60, window_text="Airline_Simulator")
     globally_stuff.game = Airline_Game
     globally_stuff.text_font = sge.gfx.Font("Droid Sans Mono", size=24)
     Main_Room = airline_manufacturer_home.create_room()

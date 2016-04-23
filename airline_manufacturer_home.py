@@ -16,11 +16,17 @@ class Manufacturer_Home (sge.dsp.Room):
 
     def event_room_start(self):
         self.name = self.__class__.__name__
-        manufacturer_music = sge.snd.Music(os.path.join('music', 'airplane_manufacturer_select.ogg'))
-        manufacturer_music.play()
+        self.manufacturer_music = sge.snd.Music(os.path.join('music', 'manufacturer_home.ogg'))
+        self.manufacturer_music.play()
+
+    def event_room_end(self):
+        self.manufacturer_music.stop()
 
     def event_key_press(self, key, char):
         pass
+
+    def event_room_resume(self):
+        self.manufacturer_music.play()
 
     def event_mouse_button_press(self, button):
         x_pos = sge.mouse.get_x()
@@ -28,7 +34,8 @@ class Manufacturer_Home (sge.dsp.Room):
         collied_objects = sge.collision.rectangle(x_pos, y_pos, 0, 0)
         for obj in collied_objects:
             Man_Room = airline_manufacturer.create_room(obj.sprite.name)
-            globally_stuff.room_list.append(Man_Room)
+            # globally_stuff.room_list.append(Man_Room)
+            self.manufacturer_music.stop()
             Man_Room.start(transition="iris_out", transition_time=500, transition_arg=(x_pos, y_pos))
 
 def create_room():
