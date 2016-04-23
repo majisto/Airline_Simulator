@@ -1,7 +1,16 @@
 import os
+
 import sge
+
 import airline_manufacturer
 import globally_stuff
+
+#Constants for graphics directory and sprite names.
+graphics_directory_name = 'graphics'
+boeing_sprite_name = 'boeing_manufacturer_icon'
+airbus_sprite_name = 'airbus_manufacturer_icon'
+tupolev_sprite_name = 'tupolev_manufacturer_icon'
+map_sprite_name = 'cropped_us_europe'
 
 class Manufacturer_Home (sge.dsp.Room):
 
@@ -14,43 +23,22 @@ class Manufacturer_Home (sge.dsp.Room):
         pass
 
     def event_mouse_button_press(self, button):
-        print ("Airline sim room list is {0}".format(globally_stuff.room_list))
-        lay = []
         x_pos = sge.mouse.get_x()
         y_pos = sge.mouse.get_y()
-        print globally_stuff.game.window_text
-        background_manufacturer = sge.gfx.Background(lay, sge.gfx.Color("white"))
-        Man_Room = airline_manufacturer.Manufacturer(selected_manufacturer=globally_stuff.plane_list, background=background_manufacturer)
-        globally_stuff.room_list.append(Man_Room)
-        Man_Room.start(transition="iris_in")
-        # if sge.mouse.get_x() > 20 and sge.mouse.get_y() > 20:
-        #     sprite_list = []
-        #     print ("Manufacturer Room created.")
-        #     # Font
-        #     text_font = sge.gfx.Font("Droid Sans Mono", size=24)
-        #     p_list = planes.get_plane_list()
-        #     for plane in p_list:
-        #         # assert isinstance(plane, planes.Plane_Test)
-        #         new_sprite = sge.gfx.Sprite(width=sge.game.width, height=30)
-        #         new_sprite.draw_text(text_font, plane.manufacturer, 0, 0, color=sge.gfx.Color("red"), halign='left')
-        #         sprite_list.append(new_sprite)
-        #     layers_man = []
-        #     i = 0
-        #     for sp in sprite_list:
-        #         layers_man.append(sge.gfx.BackgroundLayer(sp, 0, i, 1))
-        #         i += sp.height
-        #     background_manufacturer = sge.gfx.Background(layers_man, sge.gfx.Color("white"))
-        #     Man_room = airline_manufacturer.Manufacturer(background=background_manufacturer)
-        #     Man_room.p_list = p_list
-        #     Man_room.start(transition="iris_in")
-        pass
+        lay = []
+        collied_objects = sge.collision.rectangle(x_pos, y_pos, 0, 0)
+        for obj in collied_objects:
+            background_manufacturer = sge.gfx.Background(lay, sge.gfx.Color("white"))
+            Man_Room = airline_manufacturer.Manufacturer(selected_manufacturer=obj.sprite.name, background=background_manufacturer)
+            globally_stuff.room_list.append(Man_Room)
+            Man_Room.start(transition="iris_out", transition_time=1000, transition_arg=(x_pos, y_pos))
 
 def create_room():
     #Sprites
-    background_map = sge.gfx.Sprite('cropped_us_europe', 'graphics')
-    airbus_logo = sge.gfx.Sprite('airbus_manufacturer_icon', 'graphics')
-    boeing_logo = sge.gfx.Sprite('boeing_manufacturer_icon', 'graphics')
-    tupolev_logo = sge.gfx.Sprite('tupolev_manufacturer_icon', 'graphics')
+    background_map = sge.gfx.Sprite(map_sprite_name, graphics_directory_name)
+    airbus_logo = sge.gfx.Sprite(airbus_sprite_name, graphics_directory_name)
+    boeing_logo = sge.gfx.Sprite(boeing_sprite_name, graphics_directory_name)
+    tupolev_logo = sge.gfx.Sprite(tupolev_sprite_name, graphics_directory_name)
     text_box = sge.gfx.Sprite(width=sge.game.width, height=150)
     airline_name = sge.gfx.Sprite(width=150, height=50)
     airline_cash = sge.gfx.Sprite(width=160, height=50)
@@ -61,19 +49,21 @@ def create_room():
 
     #Font
     text_font = sge.gfx.Font("Droid Sans Mono", size=24)
-    # text_box.draw_clear()
+
     text_box.draw_text(text_font, "Which manufacturer would you like to visit?", 5, 5,
                        color=sge.gfx.Color("black"))
     airline_name.draw_text(text_font, "Metlink", 0, 0, color=sge.gfx.Color("red"))
     airline_cash.draw_text(text_font, "$2,500,000K ", 0, 0, color=sge.gfx.Color("red"), halign='left')
 
+    boeing_object = sge.dsp.Object(20, 150, z=1, sprite=boeing_logo)
+    airbus_object = sge.dsp.Object(580, 140, z=1, sprite=airbus_logo)
+    tupolev_object = sge.dsp.Object(sge.game.width - tupolev_logo.width, 40, z=1, sprite=tupolev_logo)
+    object_list = [boeing_object, airbus_object, tupolev_object]
+
     #Background Layer
     layers = [sge.gfx.BackgroundLayer(background_map, 0, 0, -10000),
-              sge.gfx.BackgroundLayer(boeing_logo, 20, 150, 1),
-              sge.gfx.BackgroundLayer(airbus_logo, 580, 140, 1),
-              sge.gfx.BackgroundLayer(tupolev_logo, sge.game.width - tupolev_logo.width, 40, 1),
               sge.gfx.BackgroundLayer(airline_name, 0, sge.game.height - airline_name.height, 1),
               sge.gfx.BackgroundLayer(airline_cash, sge.game.width - airline_cash.width, sge.game.height - airline_name.height, 1),
               sge.gfx.BackgroundLayer(text_box, 0, 400, 1)]
     background = sge.gfx.Background(layers, sge.gfx.Color("white"))
-    return Manufacturer_Home(background=background)
+    return Manufacturer_Home(background=background, objects=object_list)
