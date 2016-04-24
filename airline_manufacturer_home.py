@@ -1,7 +1,5 @@
 import os
-
 import sge
-
 import airline_manufacturer
 import globally_stuff
 
@@ -45,8 +43,8 @@ def create_room():
     boeing_logo = sge.gfx.Sprite(boeing_sprite_name, graphics_directory_name)
     tupolev_logo = sge.gfx.Sprite(tupolev_sprite_name, graphics_directory_name)
     text_box = sge.gfx.Sprite(width=sge.game.width, height=150)
-    airline_name = sge.gfx.Sprite(width=150, height=50)
-    airline_cash = sge.gfx.Sprite(width=160, height=50)
+    airline_name = sge.gfx.Sprite(width=200, height=50)
+    airline_cash = sge.gfx.Sprite(width=200, height=50)
 
     #Rectangles
     text_box.draw_rectangle(0,0, text_box.width - 5, text_box.height - 5, outline=sge.gfx.Color("gray")
@@ -57,8 +55,8 @@ def create_room():
 
     text_box.draw_text(text_font, "Which manufacturer would you like to visit?", 5, 5,
                        color=sge.gfx.Color("black"))
-    airline_name.draw_text(text_font, "Metlink", 0, 0, color=sge.gfx.Color("red"))
-    airline_cash.draw_text(text_font, "$2,500,000K ", 0, 0, color=sge.gfx.Color("red"), halign='left')
+    airline_name.draw_text(text_font, globally_stuff.player.airline_name, 0, 0, color=sge.gfx.Color("red"))
+    airline_cash.draw_text(text_font, "${0}".format(globally_stuff.player.money), 0, 0, color=sge.gfx.Color("red"), halign='left')
 
     boeing_object = sge.dsp.Object(20, 150, z=1, sprite=boeing_logo)
     airbus_object = sge.dsp.Object(580, 140, z=1, sprite=airbus_logo)

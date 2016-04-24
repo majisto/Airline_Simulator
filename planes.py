@@ -30,11 +30,3 @@ def get_plane_list():
 
 if __name__ == '__main__':
     pass
-    # with open("Airplane_Master_List.csv", "r") as f:
-    #     airplanes = csv.reader(f, delimiter=',', quotechar='|')
-    #     for plane in airplanes:
-    #         assert isinstance(plane, list) and len(plane) == 11
-    #         a = Plane_Test(plane)
-    #         plane_list[a.short_name] = a
-    # for x in plane_list.keys():
-    #     print vars(plane_list[x])
