@@ -13,10 +13,10 @@ class Launch_Room(sge.dsp.Room):
     airline_name = []
 
     def event_room_start(self):
-        prompt.draw_text(globally_stuff.text_font, "Please name your airline below", 0, 0, color=sge.gfx.Color('black'))
+        prompt.draw_text(globally_stuff.text_font, "Please name your airline below.  Max 13 characters.", 0, 0, color=sge.gfx.Color('black'))
 
     def event_key_press(self, key, char):
-        if len(self.airline_name) > 12 and key != "backspace":
+        if len(self.airline_name) > 14 and key != "backspace":
             return
         if key == "backspace":
             if len(self.airline_name) > 0:
