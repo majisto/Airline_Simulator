@@ -4,7 +4,7 @@ import airline_manufacturer
 import globally_stuff
 
 #Constants for graphics directory and sprite names.
-graphics_directory_name = 'graphics'
+# graphics_directory_name = 'graphics'
 boeing_sprite_name = 'boeing_manufacturer_icon'
 airbus_sprite_name = 'airbus_manufacturer_icon'
 tupolev_sprite_name = 'tupolev_manufacturer_icon'
@@ -21,7 +21,8 @@ class Manufacturer_Home (sge.dsp.Room):
         self.manufacturer_music.stop()
 
     def event_key_press(self, key, char):
-        pass
+        for room in globally_stuff.room_list:
+            print room
 
     def event_room_resume(self):
         self.manufacturer_music.play()
@@ -38,10 +39,10 @@ class Manufacturer_Home (sge.dsp.Room):
 
 def create_room():
     #Sprites
-    background_map = sge.gfx.Sprite(map_sprite_name, graphics_directory_name)
-    airbus_logo = sge.gfx.Sprite(airbus_sprite_name, graphics_directory_name)
-    boeing_logo = sge.gfx.Sprite(boeing_sprite_name, graphics_directory_name)
-    tupolev_logo = sge.gfx.Sprite(tupolev_sprite_name, graphics_directory_name)
+    background_map = sge.gfx.Sprite(map_sprite_name, globally_stuff.graphics_directory)
+    airbus_logo = sge.gfx.Sprite(airbus_sprite_name, globally_stuff.graphics_directory)
+    boeing_logo = sge.gfx.Sprite(boeing_sprite_name, globally_stuff.graphics_directory)
+    tupolev_logo = sge.gfx.Sprite(tupolev_sprite_name, globally_stuff.graphics_directory)
     text_box = sge.gfx.Sprite(width=sge.game.width, height=150)
     airline_name = sge.gfx.Sprite(width=200, height=50)
     airline_cash = sge.gfx.Sprite(width=200, height=50)

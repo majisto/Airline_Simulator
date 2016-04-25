@@ -4,3 +4,4 @@ manufacturer_list = set()
 game = None #Game Object
 text_font = None
 player = None
+graphics_directory = 'graphics'

@@ -4,6 +4,7 @@ import globally_stuff
 import airline_manufacturer_home
 import planes
 import player
+import region_room
 
 text_box = None
 prompt = None
@@ -27,10 +28,10 @@ class Launch_Room(sge.dsp.Room):
                 text_box.draw_text(globally_stuff.text_font, ''.join(self.airline_name), 5, 5, color=sge.gfx.Color('black'))
             return
         elif key == "enter":
-            print "Enter was pressed"
+            print ("Enter was pressed")
             p = player.Player("1,000,000K", ''.join(self.airline_name))
             globally_stuff.player = p
-            Main_Room = airline_manufacturer_home.create_room()
+            Main_Room = region_room.create_room()
             globally_stuff.room_list.append(Main_Room)
             globally_stuff.plane_list = planes.get_plane_list()
             Main_Room.start()

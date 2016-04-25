@@ -20,8 +20,8 @@ class Manufacturer(sge.dsp.Room):
 
     def event_room_start(self):
         text_box.draw_text(globally_stuff.text_font, self.manufacturer, 5, 5, color=sge.gfx.Color("black"))
-        print self.manufacturer
-        print globally_stuff.room_list
+        print (self.manufacturer)
+        print (globally_stuff.room_list)
         self.music.play()
 
     def event_room_end(self):
