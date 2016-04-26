@@ -1,7 +1,7 @@
 import os
 import sge
 import airline_manufacturer
-import globally_stuff
+import global_values
 
 #Constants for graphics directory and sprite names.
 # graphics_directory_name = 'graphics'
@@ -21,7 +21,7 @@ class Manufacturer_Home (sge.dsp.Room):
         self.manufacturer_music.stop()
 
     def event_key_press(self, key, char):
-        for room in globally_stuff.room_list:
+        for room in global_values.room_list:
             print room
 
     def event_room_resume(self):
@@ -39,10 +39,10 @@ class Manufacturer_Home (sge.dsp.Room):
 
 def create_room():
     #Sprites
-    background_map = sge.gfx.Sprite(map_sprite_name, globally_stuff.graphics_directory)
-    airbus_logo = sge.gfx.Sprite(airbus_sprite_name, globally_stuff.graphics_directory)
-    boeing_logo = sge.gfx.Sprite(boeing_sprite_name, globally_stuff.graphics_directory)
-    tupolev_logo = sge.gfx.Sprite(tupolev_sprite_name, globally_stuff.graphics_directory)
+    background_map = sge.gfx.Sprite(map_sprite_name, global_values.graphics_directory)
+    airbus_logo = sge.gfx.Sprite(airbus_sprite_name, global_values.graphics_directory)
+    boeing_logo = sge.gfx.Sprite(boeing_sprite_name, global_values.graphics_directory)
+    tupolev_logo = sge.gfx.Sprite(tupolev_sprite_name, global_values.graphics_directory)
     text_box = sge.gfx.Sprite(width=sge.game.width, height=150)
     airline_name = sge.gfx.Sprite(width=200, height=50)
     airline_cash = sge.gfx.Sprite(width=200, height=50)
@@ -56,8 +56,8 @@ def create_room():
 
     text_box.draw_text(text_font, "Which manufacturer would you like to visit?", 5, 5,
                        color=sge.gfx.Color("black"))
-    airline_name.draw_text(text_font, globally_stuff.player.airline_name, 0, 0, color=sge.gfx.Color("red"))
-    airline_cash.draw_text(text_font, "${0}".format(globally_stuff.player.money), 0, 0, color=sge.gfx.Color("red"), halign='left')
+    airline_name.draw_text(text_font, global_values.player.airline_name, 0, 0, color=sge.gfx.Color("red"))
+    airline_cash.draw_text(text_font, "${0}".format(global_values.player.money), 0, 0, color=sge.gfx.Color("red"), halign='left')
 
     boeing_object = sge.dsp.Object(20, 150, z=1, sprite=boeing_logo)
     airbus_object = sge.dsp.Object(580, 140, z=1, sprite=airbus_logo)

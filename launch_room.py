@@ -1,6 +1,6 @@
 import sge
 
-import globally_stuff
+import global_values
 import airline_manufacturer_home
 import planes
 import player
@@ -14,7 +14,7 @@ class Launch_Room(sge.dsp.Room):
     airline_name = []
 
     def event_room_start(self):
-        prompt.draw_text(globally_stuff.text_font, "Please name your airline below.  Max 13 characters.", 0, 0, color=sge.gfx.Color('black'))
+        prompt.draw_text(global_values.text_font, "Please name your airline below.  Max 13 characters.", 0, 0, color=sge.gfx.Color('black'))
 
     def event_key_press(self, key, char):
         if len(self.airline_name) > 14 and key != "backspace":
@@ -25,20 +25,20 @@ class Launch_Room(sge.dsp.Room):
                 text_box.draw_clear()
                 text_box.draw_rectangle(0, 0, text_box.width - 5, text_box.height - 5, outline=sge.gfx.Color("gray")
                                         , outline_thickness=5)
-                text_box.draw_text(globally_stuff.text_font, ''.join(self.airline_name), 5, 5, color=sge.gfx.Color('black'))
+                text_box.draw_text(global_values.text_font, ''.join(self.airline_name), 5, 5, color=sge.gfx.Color('black'))
             return
         elif key == "enter":
             print ("Enter was pressed")
             p = player.Player("1,000,000K", ''.join(self.airline_name))
-            globally_stuff.player = p
+            global_values.player = p
             Main_Room = region_room.create_room()
-            globally_stuff.room_list.append(Main_Room)
-            globally_stuff.plane_list = planes.get_plane_list()
+            global_values.room_list.append(Main_Room)
+            global_values.plane_list = planes.get_plane_list()
             Main_Room.start()
         self.airline_name.append(char)
         text_box.draw_rectangle(0, 0, text_box.width - 5, text_box.height - 5, outline=sge.gfx.Color("gray")
                                 , outline_thickness=5)
-        text_box.draw_text(globally_stuff.text_font, ''.join(self.airline_name), 5, 5, color=sge.gfx.Color('black'))
+        text_box.draw_text(global_values.text_font, ''.join(self.airline_name), 5, 5, color=sge.gfx.Color('black'))
 
 def create_room():
     global text_box, prompt

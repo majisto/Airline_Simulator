@@ -1,7 +1,7 @@
 import os
 import sge
 import airline_manufacturer_home
-import globally_stuff
+import global_values
 
 text_box = None
 
@@ -19,9 +19,9 @@ class Manufacturer(sge.dsp.Room):
             self.music = sge.snd.Music(os.path.join('music', 'mazda_tupolev.ogg'))
 
     def event_room_start(self):
-        text_box.draw_text(globally_stuff.text_font, self.manufacturer, 5, 5, color=sge.gfx.Color("black"))
+        text_box.draw_text(global_values.text_font, self.manufacturer, 5, 5, color=sge.gfx.Color("black"))
         print (self.manufacturer)
-        print (globally_stuff.room_list)
+        print (global_values.room_list)
         self.music.play()
 
     def event_room_end(self):
@@ -33,7 +33,7 @@ class Manufacturer(sge.dsp.Room):
         collied_objects = sge.collision.rectangle(x_pos, y_pos, 0, 0)
         for obj in collied_objects:
             if obj.sprite.name == "back_button":
-                for room in globally_stuff.room_list:
+                for room in global_values.room_list:
                     if isinstance(room, airline_manufacturer_home.Manufacturer_Home):
                         self.music.stop()
                         room.start(transition="iris_in", transition_time=500,transition_arg=(x_pos,y_pos))
