@@ -19,7 +19,13 @@ class Manufacturer(sge.dsp.Room):
             self.music = sge.snd.Music(os.path.join('music', 'mazda_tupolev.ogg'))
 
     def event_room_start(self):
-        text_box.draw_text(global_values.text_font, self.manufacturer, 5, 5, color=sge.gfx.Color("black"))
+        text_box.draw_text(global_values.text_font, self.manufacturer, 5, 5, color=sge.gfx.Color("black"),
+                           halign="center")
+        print type(self.objects[0])
+        print type(self.objects[1])
+        for obj in self.objects:
+            if type(obj) == sge.dsp.Object:
+                print obj.sprite
         print (self.manufacturer)
         print (global_values.room_list)
         self.music.play()
