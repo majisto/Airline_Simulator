@@ -3,8 +3,7 @@ import sge
 import airline_manufacturer
 import global_values
 
-#Constants for graphics directory and sprite names.
-# graphics_directory_name = 'graphics'
+#Constants for sprite names.
 boeing_sprite_name = 'boeing_manufacturer_icon'
 airbus_sprite_name = 'airbus_manufacturer_icon'
 tupolev_sprite_name = 'tupolev_manufacturer_icon'
@@ -22,6 +21,7 @@ class Manufacturer_Home (sge.dsp.Room):
 
     def event_key_press(self, key, char):
         if key == "b":
+            sge.snd.Music.stop()
             global_values.room_dict["region"].start(transition="pixelate", transition_time=500)
 
     def event_room_resume(self):

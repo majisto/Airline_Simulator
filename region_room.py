@@ -21,12 +21,13 @@ class Region_Room(sge.dsp.Room):
         y_pos = sge.mouse.get_y()
         collied_objects = sge.collision.rectangle(x_pos, y_pos, 0, 0)
         for obj in collied_objects:
-            City_Room = city.create_city_room(global_values.city_dict["new_york"])
+            City_Room = city.create_city_room(obj)
             City_Room.start(transition="pixelate", transition_time=500)
 
 def create_room():
     # Sprites
     city_dot = sge.gfx.Sprite(width=8,height=8)
+    austin_dot = sge.gfx.Sprite(width=8,height=8)
     airline_name = sge.gfx.Sprite(width=200, height=50)
     airline_cash = sge.gfx.Sprite(width=200, height=50)
 
@@ -34,10 +35,11 @@ def create_room():
     airline_cash.draw_text(global_values.text_font, "${0}".format(global_values.player.money), 0, 0, color=sge.gfx.Color("red"),
                            halign='left')
     city_dot.draw_ellipse(0, 0, city_dot.width, city_dot.height, fill=sge.gfx.Color("green"))
-    new_york = city.City("New York", (710, 210), "NA", 18, 60,80, sprite=city_dot)
-    global_values.city_dict["new_york"] = new_york
+    austin_dot.draw_ellipse(0, 0, austin_dot.width, austin_dot.height, fill=sge.gfx.Color("green"))
+    austin = city.City("Austin, TX\nUnited States", (385, 450), "NA", 2, 65, 85, sprite=city_dot)
+    new_york = city.City("New York, NY\nUnited States", (710, 210), "NA", 18, 60,80, sprite=austin_dot)
     background_map = sge.gfx.Sprite(map_sprite_name, global_values.graphics_directory)
-    object_list = [new_york]
+    object_list = [new_york, austin]
     layers = [sge.gfx.BackgroundLayer(background_map, 0, 0, -1000),
               sge.gfx.BackgroundLayer(airline_name, 0, background_map.height, 1),
               sge.gfx.BackgroundLayer(airline_cash, sge.game.width - airline_cash.width,
