@@ -21,8 +21,8 @@ class Manufacturer_Home (sge.dsp.Room):
         self.manufacturer_music.stop()
 
     def event_key_press(self, key, char):
-        for room in global_values.room_list:
-            print room
+        if key == "b":
+            global_values.room_dict["region"].start(transition="pixelate", transition_time=500)
 
     def event_room_resume(self):
         self.manufacturer_music.play()

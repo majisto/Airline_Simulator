@@ -15,6 +15,6 @@ if __name__ == '__main__':
     global_values.text_font = sge.gfx.Font("Droid Sans Mono", size=28)
     city_dot = sge.gfx.Sprite(width=8, height=8)
     new_york = city.City("New York\nUnited States", (710, 210), "NA", 18, 60, 80, sprite=city_dot)
-    Main_Room = city.create_city_room(new_york)
+    Main_Room = launch_room.create_room()
     sge.game.start_room = Main_Room
     Airline_Game.start()

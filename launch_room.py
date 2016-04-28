@@ -33,6 +33,7 @@ class Launch_Room(sge.dsp.Room):
             global_values.player = p
             Main_Room = region_room.create_room()
             global_values.room_list.append(Main_Room)
+            global_values.room_dict["region"] = Main_Room
             global_values.plane_list = planes.get_plane_list()
             Main_Room.start()
         self.airline_name.append(char)

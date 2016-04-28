@@ -1,4 +1,6 @@
 room_list = [] #All active rooms
+room_dict = {}
+city_dict = {}
 plane_list = [] #All planes possible
 manufacturer_list = set()
 game = None #Game Object

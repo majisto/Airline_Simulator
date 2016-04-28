@@ -9,11 +9,20 @@ class Region_Room(sge.dsp.Room):
 
     def event_room_start(self):
         pass
+
     def event_key_press(self, key, char):
         if key == "m":
             Next_Room = airline_manufacturer_home.create_room()
             global_values.room_list.append(Next_Room)
             Next_Room.start(transition="pixelate", transition_time=500)
+
+    def event_mouse_button_press(self, button):
+        x_pos = sge.mouse.get_x()
+        y_pos = sge.mouse.get_y()
+        collied_objects = sge.collision.rectangle(x_pos, y_pos, 0, 0)
+        for obj in collied_objects:
+            City_Room = city.create_city_room(global_values.city_dict["new_york"])
+            City_Room.start(transition="pixelate", transition_time=500)
 
 def create_room():
     # Sprites
@@ -26,6 +35,7 @@ def create_room():
                            halign='left')
     city_dot.draw_ellipse(0, 0, city_dot.width, city_dot.height, fill=sge.gfx.Color("green"))
     new_york = city.City("New York", (710, 210), "NA", 18, 60,80, sprite=city_dot)
+    global_values.city_dict["new_york"] = new_york
     background_map = sge.gfx.Sprite(map_sprite_name, global_values.graphics_directory)
     object_list = [new_york]
     layers = [sge.gfx.BackgroundLayer(background_map, 0, 0, -1000),
