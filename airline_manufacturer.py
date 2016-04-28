@@ -19,40 +19,39 @@ class Manufacturer(sge.dsp.Room):
             self.music = sge.snd.Music(os.path.join('music', 'mazda_tupolev.ogg'))
 
     def event_room_start(self):
-        text_box.draw_text(global_values.text_font, self.manufacturer, 5, 5, color=sge.gfx.Color("black"),
-                           halign="center")
-        print type(self.objects[0])
-        print type(self.objects[1])
-        for obj in self.objects:
-            if type(obj) == sge.dsp.Object:
-                print obj.sprite
-        print (self.manufacturer)
-        print (global_values.room_list)
         self.music.play()
 
     def event_room_end(self):
         self.music.stop(fade_time=500)
 
-    def event_mouse_button_press(self, button):
-        x_pos = sge.mouse.get_x()
-        y_pos = sge.mouse.get_y()
-        collied_objects = sge.collision.rectangle(x_pos, y_pos, 0, 0)
-        for obj in collied_objects:
-            if obj.sprite.name == "back_button":
-                for room in global_values.room_list:
-                    if isinstance(room, airline_manufacturer_home.Manufacturer_Home):
-                        self.music.stop()
-                        room.start(transition="iris_in", transition_time=500,transition_arg=(x_pos,y_pos))
+    def event_key_press(self, key, char):
+        if key == "b":
+            global_values.room_dict["man_home"].start()
 
 def create_room(manufacturer):
     global text_box
-    text_box = sge.gfx.Sprite(width=sge.game.width, height=150)
-    back_button_icon = sge.gfx.Sprite("back_button", directory="graphics")
+    man_info = check_manufacturer(manufacturer)
+    city_font = sge.gfx.Font("droid sans mono", size=40)
+    text_box = sge.gfx.Sprite(width=sge.game.width, height=80)
+    logo = sge.gfx.Sprite(man_info[1], global_values.graphics_directory)
     text_box.my_name = "manufacturer_text_box"
-    back_button_object = sge.dsp.Object(0,0, sprite=back_button_icon)
-    text_box_object = sge.dsp.Object(0, 200, z=1, sprite=text_box)
-    object_list = [text_box_object, back_button_object]
+    text_box.draw_rectangle(0,0, text_box.width, text_box.height, outline=sge.gfx.Color("gray"),
+                            outline_thickness=3)
+    text_box.draw_text(city_font, man_info[0], 350, 15,
+                       color=sge.gfx.Color("black"))
+    text_box_object = sge.dsp.Object(0, 0, z=1, sprite=text_box)
+    logo_object = sge.dsp.Object(0,0, z=2, sprite=logo)
+    logo_object2 = sge.dsp.Object(sge.game.width - logo.width, 0, z=2, sprite=logo)
+    object_list = [text_box_object, logo_object, logo_object2]
     lay = []
     background_manufacturer = sge.gfx.Background(lay, sge.gfx.Color("white"))
     return Manufacturer(selected_manufacturer=manufacturer, background=background_manufacturer,
                         objects=object_list)
+
+def check_manufacturer(manufacturer):
+    if manufacturer == global_values.boeing_sprite_name:
+        return "Boeing", "boeing_logo_cropped"
+    elif manufacturer == global_values.airbus_sprite_name:
+        return "Airbus", None
+    elif manufacturer == global_values.tupolev_sprite_name:
+        return "Tupolev", None

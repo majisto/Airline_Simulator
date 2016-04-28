@@ -6,3 +6,6 @@ game = None #Game Object
 text_font = None
 player = None
 graphics_directory = 'graphics'
+boeing_sprite_name = 'boeing_manufacturer_icon'
+airbus_sprite_name = 'airbus_manufacturer_icon'
+tupolev_sprite_name = 'tupolev_manufacturer_icon'

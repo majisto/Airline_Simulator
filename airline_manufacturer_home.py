@@ -33,7 +33,7 @@ class Manufacturer_Home (sge.dsp.Room):
         collied_objects = sge.collision.rectangle(x_pos, y_pos, 0, 0)
         for obj in collied_objects:
             Man_Room = airline_manufacturer.create_room(obj.sprite.name)
-            # globally_stuff.room_list.append(Man_Room)
+            global_values.room_dict["man_home"] = self
             self.manufacturer_music.stop()
             Man_Room.start(transition="iris_out", transition_time=500, transition_arg=(x_pos, y_pos))
 
