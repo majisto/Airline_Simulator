@@ -4,7 +4,7 @@ import airline_manufacturer_home
 import city
 import global_values
 
-map_sprite_name = 'USA_blank_map'
+map_sprite_name = 'usa_canada_islands'
 class Region_Room(sge.dsp.Room):
 
     def event_room_start(self):
@@ -36,8 +36,10 @@ def create_room():
                            halign='left')
     city_dot.draw_ellipse(0, 0, city_dot.width, city_dot.height, fill=sge.gfx.Color("green"))
     austin_dot.draw_ellipse(0, 0, austin_dot.width, austin_dot.height, fill=sge.gfx.Color("green"))
-    austin = city.City("Austin, TX\nUnited States", (385, 450), "NA", 2, 65, 85, sprite=city_dot)
-    new_york = city.City("New York, NY\nUnited States", (710, 210), "NA", 18, 60,80, sprite=austin_dot)
+
+    austin = city.City("Austin, TX\nUnited States", (420, 392), "NA", 2, 65, 85, sprite=city_dot)
+    new_york = city.City("New York, NY\nUnited States", (742, 186), "NA", 18, 60,80, sprite=austin_dot)
+
     background_map = sge.gfx.Sprite(map_sprite_name, global_values.graphics_directory)
     object_list = [new_york, austin]
     layers = [sge.gfx.BackgroundLayer(background_map, 0, 0, -1000),
