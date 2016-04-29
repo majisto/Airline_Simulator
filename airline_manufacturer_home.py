@@ -26,6 +26,9 @@ class Manufacturer_Home (sge.dsp.Room):
 
     def event_room_resume(self):
         self.manufacturer_music.play()
+        self.background.layers[2].sprite.draw_clear()
+        self.background.layers[2].sprite.draw_text(global_values.text_font, '${:0,}K'.format(global_values.player.money2)
+                                                   , 0, 0, color=sge.gfx.Color("red"))
 
     def event_mouse_button_press(self, button):
         x_pos = sge.mouse.get_x()

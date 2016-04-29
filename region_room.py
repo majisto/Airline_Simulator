@@ -16,6 +16,12 @@ class Region_Room(sge.dsp.Room):
             global_values.room_list.append(Next_Room)
             Next_Room.start(transition="pixelate", transition_time=500)
 
+    def event_room_resume(self):
+        self.background.layers[2].sprite.draw_clear()
+        self.background.layers[2].sprite.draw_text(global_values.text_font,
+                                                   '${:0,}K'.format(global_values.player.money2)
+                                                   , 0, 0, color=sge.gfx.Color("red"))
+
     def event_mouse_button_press(self, button):
         x_pos = sge.mouse.get_x()
         y_pos = sge.mouse.get_y()

@@ -67,7 +67,7 @@ def create_city_room(City_Class):
     airline_cash = sge.gfx.Sprite(width=200, height=50)
 
     airline_name.draw_text(global_values.text_font, global_values.player.airline_name, 0, 0, color=sge.gfx.Color("red"))
-    airline_cash.draw_text(global_values.text_font, "${0}".format(global_values.player.money), 0, 0,
+    airline_cash.draw_text(global_values.text_font, '${:0,}K'.format(global_values.player.money2), 0, 0,
                            color=sge.gfx.Color("red"),
                            halign='left')
 
