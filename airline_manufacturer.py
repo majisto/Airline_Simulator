@@ -40,7 +40,7 @@ class Manufacturer(sge.dsp.Room):
                     obj.sprite.draw_text(city_font, plane.distance + " mi", 0, 0, color=sge.gfx.Color("black"))
                 if obj.name == "name":
                     obj.sprite.draw_clear()
-                    obj.sprite.draw_text(city_font, plane.model + "-" + plane.variant, 0, 0,
+                    obj.sprite.draw_text(city_font, "{0}-{1} ({2})".format(plane.model, plane.variant, plane.first_flight), 0, 0,
                                          color=sge.gfx.Color("black"))
                 if obj.name == "picture":
                     obj.sprite.draw_clear()
@@ -49,9 +49,32 @@ class Manufacturer(sge.dsp.Room):
                     obj.sprite.draw_clear()
                     obj.sprite.draw_text(desc_font, plane.description, 0, 0,
                                          color=sge.gfx.Color("black"), width=sge.game.width)
-
+                if obj.name == "fuel":
+                    obj.sprite.draw_clear()
+                    obj.sprite.draw_text(city_font, plane.fuel_efficiency, 0, 0,
+                         color=sge.gfx.Color("black"), width=sge.game.width)
+                if obj.name == "maintenance":
+                    obj.sprite.draw_clear()
+                    obj.sprite.draw_text(city_font, plane.maintenance, 0, 0,
+                         color=sge.gfx.Color("black"), width=sge.game.width)
+                if obj.name == "seating":
+                    obj.sprite.draw_clear()
+                    obj.sprite.draw_text(city_font, plane.seats, 0, 0,
+                         color=sge.gfx.Color("black"), width=sge.game.width)
+                if obj.name == "cost":
+                    obj.sprite.draw_clear()
+                    obj.sprite.draw_text(city_font, "${0},000K".format(plane.cost), 0, 0,
+                                         color=sge.gfx.Color("black"), width=sge.game.width)
     def event_room_end(self):
         self.music.stop(fade_time=500)
+
+    def event_mouse_button_press(self, button):
+        x_pos = sge.mouse.get_x()
+        y_pos = sge.mouse.get_y()
+        collied_objects = sge.collision.rectangle(x_pos, y_pos, 0, 0)
+        for obj in collied_objects:
+            if obj.name == "buy":
+                global_values.player.money -= int(self.current_plane.cost)
 
     def event_key_press(self, key, char):
         if key == "b":
@@ -73,11 +96,24 @@ def create_room(manufacturer):
     airplane_name = sge.gfx.Sprite(width=sge.game.width - airplane_picture.width, height=50)
     range_icon = sge.gfx.Sprite("range", global_values.graphics_directory)
     range_number = sge.gfx.Sprite(width=sge.game.width - (range_icon.width + airplane_picture.width),
-                                  height= range_icon.height + airplane_name.height)
+                                  height= range_icon.height)
     desc = sge.gfx.Sprite(width=sge.game.width, height=150)
     airline_name = sge.gfx.Sprite(width=200, height=50)
     airline_cash = sge.gfx.Sprite(width=200, height=50)
+    fuel_icon = sge.gfx.Sprite("gas_pump_cropped", global_values.graphics_directory)
+    fuel_icon_number = sge.gfx.Sprite(width=sge.game.width - (fuel_icon.width + airplane_picture.width),
+                                  height= range_icon.height)
+    maintenance_icon = sge.gfx.Sprite("wrench_cropped", global_values.graphics_directory)
+    maintenance_number = sge.gfx.Sprite(width=sge.game.width, height=maintenance_icon.height)
+    seating_icon = sge.gfx.Sprite("seatbelt_cropped", global_values.graphics_directory)
+    seating_number = sge.gfx.Sprite(width=sge.game.width, height=seating_icon.height)
+    cost_icon = sge.gfx.Sprite("wallet_cropped", global_values.graphics_directory)
+    cost_number = sge.gfx.Sprite(width=sge.game.width, height=cost_icon.height)
+    buy_button = sge.gfx.Sprite(width=sge.game.width - airplane_picture.width, height=50)
 
+    buy_button.draw_rectangle(0, 0, buy_button.width, buy_button.height, outline=sge.gfx.Color("blue"),
+                              outline_thickness=5)
+    buy_button.draw_text(city_font, "Buy!", 160, 0, color=sge.gfx.Color("black"))
     text_box.draw_rectangle(0,0, text_box.width, text_box.height, outline=sge.gfx.Color("gray"),
                             outline_thickness=3)
     text_box.draw_text(city_font, man_info[0], 450, 15,
@@ -100,11 +136,31 @@ def create_room(manufacturer):
     airline_cash_object = sge.dsp.Object(sge.game.width - airline_cash.width, sge.game.height - airline_name.height,
                                          sprite=airline_cash)
     airline_cash_object.name = "cash"
+    fuel_icon_object = sge.dsp.Object(fuel_icon.width + airplane_picture.width + OFFSET_ICON,
+                                      range_number_object.bbox_bottom, sprite=fuel_icon_number)
+    fuel_icon_object.name = "fuel"
+    maintenance_object = sge.dsp.Object(maintenance_icon.width + airplane_picture.width + OFFSET_ICON,
+                                        fuel_icon_object.bbox_bottom, sprite=maintenance_number)
+    maintenance_object.name = "maintenance"
+    seating_number_object = sge.dsp.Object(seating_icon.width + airplane_picture.width + OFFSET_ICON,
+                                           maintenance_object.bbox_bottom, sprite=seating_number)
+    seating_number_object.name = "seating"
+    cost_number_object = sge.dsp.Object(cost_icon.width + airplane_picture.width +OFFSET_ICON,
+                                        seating_number_object.bbox_bottom, sprite=cost_number)
+    cost_number_object.name = "cost"
+    buy_button_object = sge.dsp.Object(airplane_picture.width, cost_number_object.bbox_bottom,sprite=buy_button)
+    buy_button_object.name = "buy"
 
     object_list = [text_box_object, logo_object, logo_object2, airplane_picture_object,
-                   range_number_object, airplane_name_object, desc_object, airline_cash_object]
-    lay = [sge.gfx.BackgroundLayer(range_icon, airplane_picture.width, text_box.height + airplane_name.height, 2),
-           sge.gfx.BackgroundLayer(airline_name, 0, sge.game.height - airline_name.height, 1)]
+                   range_number_object, airplane_name_object, desc_object, airline_cash_object,
+                   fuel_icon_object, maintenance_object, seating_number_object, cost_number_object,
+                   buy_button_object]
+    lay = [sge.gfx.BackgroundLayer(range_icon, airplane_picture.width, range_number_object.y, 2),
+           sge.gfx.BackgroundLayer(airline_name, 0, sge.game.height - airline_name.height, 1),
+           sge.gfx.BackgroundLayer(fuel_icon, airplane_picture.width, fuel_icon_object.y),
+           sge.gfx.BackgroundLayer(maintenance_icon, airplane_picture.width, maintenance_object.y),
+           sge.gfx.BackgroundLayer(seating_icon, airplane_picture.width, seating_number_object.y),
+           sge.gfx.BackgroundLayer(cost_icon, airplane_picture.width, cost_number_object.y)]
     background_manufacturer = sge.gfx.Background(lay, sge.gfx.Color("white"))
     return Manufacturer(selected_manufacturer=manufacturer, background=background_manufacturer,
                         objects=object_list)

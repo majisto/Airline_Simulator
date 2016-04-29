@@ -43,7 +43,7 @@ def create_room():
     airbus_logo = sge.gfx.Sprite(airbus_sprite_name, global_values.graphics_directory)
     boeing_logo = sge.gfx.Sprite(boeing_sprite_name, global_values.graphics_directory)
     tupolev_logo = sge.gfx.Sprite(tupolev_sprite_name, global_values.graphics_directory)
-    text_box = sge.gfx.Sprite(width=sge.game.width, height=150)
+    text_box = sge.gfx.Sprite(width=sge.game.width, height=100)
     airline_name = sge.gfx.Sprite(width=200, height=50)
     airline_cash = sge.gfx.Sprite(width=200, height=50)
 
@@ -52,7 +52,7 @@ def create_room():
         ,outline_thickness=5)
 
     #Font
-    text_font = sge.gfx.Font("Droid Sans Mono", size=24)
+    text_font = sge.gfx.Font("Droid Sans Mono", size=28)
 
     text_box.draw_text(text_font, "Which manufacturer would you like to visit?", 5, 5,
                        color=sge.gfx.Color("black"))
@@ -68,6 +68,6 @@ def create_room():
     layers = [sge.gfx.BackgroundLayer(background_map, 0, 0, -10000),
               sge.gfx.BackgroundLayer(airline_name, 0, sge.game.height - airline_name.height, 1),
               sge.gfx.BackgroundLayer(airline_cash, sge.game.width - airline_cash.width, sge.game.height - airline_name.height, 1),
-              sge.gfx.BackgroundLayer(text_box, 0, 400, 1)]
+              sge.gfx.BackgroundLayer(text_box, 0, 500, 1)]
     background = sge.gfx.Background(layers, sge.gfx.Color("white"))
     return Manufacturer_Home(background=background, objects=object_list)
