@@ -57,7 +57,7 @@ def create_room():
     text_box.draw_text(text_font, "Which manufacturer would you like to visit?", 5, 5,
                        color=sge.gfx.Color("black"))
     airline_name.draw_text(text_font, global_values.player.airline_name, 0, 0, color=sge.gfx.Color("red"))
-    airline_cash.draw_text(text_font, "${0}".format(global_values.player.money), 0, 0, color=sge.gfx.Color("red"))
+    airline_cash.draw_text(text_font, '${:0,}K'.format(global_values.player.money2), 0, 0, color=sge.gfx.Color("red"))
 
     boeing_object = sge.dsp.Object(20, 150, z=1, sprite=boeing_logo)
     airbus_object = sge.dsp.Object(580, 140, z=1, sprite=airbus_logo)

@@ -29,7 +29,7 @@ class Launch_Room(sge.dsp.Room):
             return
         elif key == "enter":
             print ("Enter was pressed")
-            p = player.Player("1,000,000K", ''.join(self.airline_name))
+            p = player.Player("1,000,000K", ''.join(self.airline_name), 1000000)
             global_values.player = p
             Main_Room = region_room.create_room()
             global_values.room_list.append(Main_Room)

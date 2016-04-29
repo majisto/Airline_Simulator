@@ -32,7 +32,7 @@ def create_room():
     airline_cash = sge.gfx.Sprite(width=200, height=50)
 
     airline_name.draw_text(global_values.text_font, global_values.player.airline_name, 0, 0, color=sge.gfx.Color("red"))
-    airline_cash.draw_text(global_values.text_font, "${0}".format(global_values.player.money), 0, 0, color=sge.gfx.Color("red"),
+    airline_cash.draw_text(global_values.text_font, '${:0,}K'.format(global_values.player.money2), 0, 0, color=sge.gfx.Color("red"),
                            halign='left')
     city_dot.draw_ellipse(0, 0, city_dot.width, city_dot.height, fill=sge.gfx.Color("green"))
     austin_dot.draw_ellipse(0, 0, austin_dot.width, austin_dot.height, fill=sge.gfx.Color("green"))

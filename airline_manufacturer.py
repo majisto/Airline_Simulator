@@ -1,6 +1,6 @@
 import os
 from itertools import cycle
-
+import locale
 import sge
 import airline_manufacturer_home
 import global_values
@@ -74,7 +74,12 @@ class Manufacturer(sge.dsp.Room):
         collied_objects = sge.collision.rectangle(x_pos, y_pos, 0, 0)
         for obj in collied_objects:
             if obj.name == "buy":
-                global_values.player.money -= int(self.current_plane.cost)
+                global_values.player.money2 -= int(self.current_plane.cost) * 1000
+                for obj in self.objects:
+                    if "name" in vars(obj) and type(obj) == sge.dsp.Object:
+                        if obj.name == "cash":
+                            obj.sprite.draw_clear()
+                            obj.sprite.draw_text(global_values.text_font, '${:0,}K'.format(global_values.player.money2), 0, 0, color=sge.gfx.Color("red"))
 
     def event_key_press(self, key, char):
         if key == "b":
@@ -87,6 +92,7 @@ class Manufacturer(sge.dsp.Room):
 
 def create_room(manufacturer):
     man_info = check_manufacturer(manufacturer)
+    locale.setlocale(locale.LC_ALL, '')
 
     city_font = sge.gfx.Font("droid sans mono", size=40)
 
@@ -119,7 +125,7 @@ def create_room(manufacturer):
     text_box.draw_text(city_font, man_info[0], 450, 15,
                        color=sge.gfx.Color("black"))
     airline_name.draw_text(global_values.text_font, global_values.player.airline_name, 0, 0, color=sge.gfx.Color("red"))
-    airline_cash.draw_text(global_values.text_font, "${0}".format(global_values.player.money), 0, 0, color=sge.gfx.Color("red"))
+    airline_cash.draw_text(global_values.text_font, '${:0,}K'.format(global_values.player.money2), 0, 0, color=sge.gfx.Color("red"))
 
     text_box_object = sge.dsp.Object(0, 0, z=1, sprite=text_box)
     logo_object = sge.dsp.Object(0,0, z=2, sprite=logo)
