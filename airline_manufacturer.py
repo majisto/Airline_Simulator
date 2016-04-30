@@ -20,7 +20,7 @@ class Manufacturer(sge.dsp.Room):
             self.music = sge.snd.Music(os.path.join('music', 'nissan_airbus.ogg'))
         elif self.manufacturer == airline_manufacturer_home.tupolev_sprite_name:
             self.music = sge.snd.Music(os.path.join('music', 'mazda_tupolev.ogg'))
-        self.plane_list = global_values.plane_dict[check_manufacturer(selected_manufacturer)[0]]
+        self.plane_list = global_values.manufacturer_dict[check_manufacturer(selected_manufacturer)[0]]
         self.cycler = cycle(self.plane_list)
         self.current_plane = None
 
@@ -75,11 +75,15 @@ class Manufacturer(sge.dsp.Room):
         for obj in collied_objects:
             if obj.name == "buy":
                 global_values.player.money2 -= int(self.current_plane.cost) * 1000
-                for obj in self.objects:
-                    if "name" in vars(obj) and type(obj) == sge.dsp.Object:
-                        if obj.name == "cash":
-                            obj.sprite.draw_clear()
-                            obj.sprite.draw_text(global_values.text_font, '${:0,}K'.format(global_values.player.money2), 0, 0, color=sge.gfx.Color("red"))
+                if self.current_plane.short_name in global_values.player.hangar:
+                    global_values.player.hangar[self.current_plane.short_name] += 1
+                else:
+                    global_values.player.hangar[self.current_plane.short_name] = 1
+                for OBJ in self.objects:
+                    if "name" in vars(OBJ) and type(OBJ) == sge.dsp.Object:
+                        if OBJ.name == "cash":
+                            OBJ.sprite.draw_clear()
+                            OBJ.sprite.draw_text(global_values.text_font, '${:0,}K'.format(global_values.player.money2), 0, 0, color=sge.gfx.Color("red"))
 
     def event_key_press(self, key, char):
         if key == "b":

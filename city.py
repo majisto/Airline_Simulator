@@ -7,14 +7,17 @@ ECON_ICON_FILENAME = 'economy_icon_cropped'
 
 class City(sge.dsp.Object):
 
-    def __init__(self, name, coordinates, region, population, tourism, economy, sprite=None):
+    def __init__(self, name, coordinates, region, population, tourism, economy, obj_name="city", sprite=None):
         super(City, self).__init__(x=coordinates[0], y=coordinates[1], sprite=sprite)
+        self.obj_name = obj_name
         self.economy = economy
         self.tourism = tourism
         self.population = population
         self.region = region
         self.city_name = name
-    pass
+    def get_name(self):
+        return self.obj_name
+
 
 class City_Room(sge.dsp.Room):
 

@@ -33,10 +33,11 @@ def get_plane_list():
                 a = Airplane(plane)
                 manufacturer_list.add(a.manufacturer)
                 plane_list.append(a)
-                if a.manufacturer in global_values.plane_dict:
-                    global_values.plane_dict[a.manufacturer].append(a)
+                if a.manufacturer in global_values.manufacturer_dict:
+                    global_values.manufacturer_dict[a.manufacturer].append(a)
                 else:
-                    global_values.plane_dict[a.manufacturer] = [a]
+                    global_values.manufacturer_dict[a.manufacturer] = [a]
+                global_values.plane_shortname_dict[a.short_name] = a
     return plane_list
 
 if __name__ == '__main__':
