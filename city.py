@@ -1,6 +1,7 @@
 import csv
 import sge
 import global_values
+import city_distance_estimator
 
 POP_ICON_FILENAME = 'population_icon'
 ECON_ICON_FILENAME = 'economy_icon_cropped'
@@ -10,8 +11,8 @@ city_dict = {}
 
 class City(sge.dsp.Object):
 
-    def __init__(self, name, coordinates, region, population, tourism, economy, obj_name="city",
-                 sprite=None, shortname=""):
+    def __init__(self, name, coordinates, region, population, tourism, economy, lat_long,
+                 obj_name="city", sprite=None, shortname=""):
         super(City, self).__init__(x=coordinates[0], y=coordinates[1], sprite=sprite)
         self.obj_name = obj_name
         self.economy = economy
@@ -19,6 +20,7 @@ class City(sge.dsp.Object):
         self.population = population
         self.region = region
         self.city_name = name
+        self.lat_long = lat_long
         self.shortname = shortname
 
     def get_name(self):
@@ -35,13 +37,14 @@ def create_cities():
                 #Cast to int because they are read in as string.  I spent way too many hours debuggin this!
                 coordinates = tuple([int(i) for i in l[2].split(",")])
                 region = l[3]
-                population = l[4]
-                tourism = l[5]
-                economy = l[6]
+                population = float(l[4])
+                tourism = int(l[5])
+                economy = int(l[6])
                 shortname = l[7]
+                lat_long = tuple([float(i) for i in l[8].split(",")])
                 city_dot = sge.gfx.Sprite(width=10, height=10)
                 city_dot.draw_ellipse(0, 0, city_dot.width, city_dot.height, fill=sge.gfx.Color("green"))
-                city = City(name, coordinates, region, population, tourism, economy,
+                city = City(name, coordinates, region, population, tourism, economy, lat_long,
                                       shortname=shortname, sprite=city_dot)
                 city_list.append(city)
                 if region in city_dict:

@@ -18,7 +18,7 @@ class Airplane:
         self.maintenance = l[6]
         self.seats = l[7]
         self.short_name = l[8]
-        self.cost = l[9]
+        self.cost = int(l[9])
         directory_name = os.path.join(global_values.planes_directory, l[0])
         self.plane_sprite = sge.gfx.Sprite(l[10], directory_name)
         self.description = l[11]

@@ -63,7 +63,7 @@ class Manufacturer(sge.dsp.Room):
                          color=sge.gfx.Color("black"), width=sge.game.width)
                 if obj.name == "cost":
                     obj.sprite.draw_clear()
-                    obj.sprite.draw_text(city_font, "${0},000K".format(plane.cost), 0, 0,
+                    obj.sprite.draw_text(city_font, '${:0,}K'.format((plane.cost * 1000)), 0, 0,
                                          color=sge.gfx.Color("black"), width=sge.game.width)
     def event_room_end(self):
         self.music.stop(fade_time=500)
@@ -74,6 +74,8 @@ class Manufacturer(sge.dsp.Room):
         collied_objects = sge.collision.rectangle(x_pos, y_pos, 0, 0)
         for obj in collied_objects:
             if obj.name == "buy":
+                if (int(self.current_plane.cost) * 1000) > global_values.player.money2:
+                    return
                 global_values.player.money2 -= int(self.current_plane.cost) * 1000
                 if self.current_plane.short_name in global_values.player.hangar:
                     global_values.player.hangar[self.current_plane.short_name] += 1
@@ -83,7 +85,8 @@ class Manufacturer(sge.dsp.Room):
                     if "name" in vars(OBJ) and type(OBJ) == sge.dsp.Object:
                         if OBJ.name == "cash":
                             OBJ.sprite.draw_clear()
-                            OBJ.sprite.draw_text(global_values.text_font, '${:0,}K'.format(global_values.player.money2), 0, 0, color=sge.gfx.Color("red"))
+                            OBJ.sprite.draw_text(global_values.text_font,
+                                '${:0,}K'.format(global_values.player.money2), 0, 0, color=sge.gfx.Color("red"))
 
     def event_key_press(self, key, char):
         if key == "b":

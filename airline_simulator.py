@@ -3,6 +3,7 @@ import sge
 import global_values
 import launch_room
 import city
+import routes
 
 class Game(sge.dsp.Game):
 
