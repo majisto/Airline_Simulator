@@ -101,7 +101,7 @@ def create_room():
     austin = city.City("Austin, TX\nUnited States", (420, 392), "NA", 2, 65, 85, sprite=city_dot)
     new_york = city.City("New York, NY\nUnited States", (742, 186), "NA", 18, 60,80, sprite=austin_dot)
 
-    object_list = [global_values.city_list[1], austin, factory_object, ticket_object, prompt_object]
+    object_list = [new_york, austin, factory_object, ticket_object, prompt_object]
     layers = [sge.gfx.BackgroundLayer(background_map, 0, 0, -1000), name_layer,
               sge.gfx.BackgroundLayer(airline_cash, sge.game.width - airline_cash.width,
                                       background_map.height, 1)]
