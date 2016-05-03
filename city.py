@@ -30,10 +30,10 @@ def create_cities():
             cities = csv.reader(f, dialect='excel')
             cityiter = iter(cities)
             next(cityiter)
-            i = 0
             for l in cityiter:
                 name = l[0] + "\n" + l[1]
-                coordinates = tuple(l[2].split(","))
+                #Cast to int because they are read in as string.  I spent way too many hours debuggin this!
+                coordinates = tuple([int(i) for i in l[2].split(",")])
                 region = l[3]
                 population = l[4]
                 tourism = l[5]
@@ -48,7 +48,6 @@ def create_cities():
                     city_dict[region].append(city)
                 else:
                     city_dict[region] = [city]
-                i += 1
         global_values.city_dict = city_dict
         global_values.city_list = city_list
     return city_list

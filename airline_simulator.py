@@ -18,4 +18,5 @@ if __name__ == '__main__':
     global_values.text_color = sge.gfx.Color("black")
     Main_Room = launch_room.create_room()
     sge.game.start_room = Main_Room
+    city.create_cities()
     Airline_Game.start()
