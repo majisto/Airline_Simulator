@@ -27,8 +27,10 @@ class Airplane:
 def get_plane_list():
     if plane_list is None or len(plane_list) == 0:
         with open("Airplane_Master_List.csv", "r") as f:
-            airplanes = csv.reader(f, delimiter=',', quotechar='|')
-            for plane in airplanes:
+            airplanes = csv.reader(f, dialect='excel')
+            iterplanes = iter(airplanes)
+            next(iterplanes)
+            for plane in iterplanes:
                 assert isinstance(plane, list) and len(plane) == 12
                 a = Airplane(plane)
                 manufacturer_list.add(a.manufacturer)

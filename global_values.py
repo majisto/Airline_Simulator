@@ -1,5 +1,8 @@
 import os
+
 room_list = [] #All active rooms
+city_list = [] #All Cities
+city_dict = {} #Cities by region
 room_dict = {}
 plane_list = [] #All planes possible
 manufacturer_dict = {} #Key: Manufacturer, Value: List of planes under manufacturer
@@ -7,6 +10,8 @@ plane_shortname_dict = {} #Maps plane shortnames to plane objects
 manufacturer_list = set()
 game = None #Game Object
 text_font = None
+text_color = None
+small_text_font = None
 player = None
 graphics_directory = os.path.join(os.path.dirname(__file__), 'graphics')
 music_directory = os.path.join(os.path.dirname(__file__), "music")

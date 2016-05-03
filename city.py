@@ -1,13 +1,17 @@
+import csv
 import sge
 import global_values
 
 POP_ICON_FILENAME = 'population_icon'
 ECON_ICON_FILENAME = 'economy_icon_cropped'
 
+city_list = []
+city_dict = {}
 
 class City(sge.dsp.Object):
 
-    def __init__(self, name, coordinates, region, population, tourism, economy, obj_name="city", sprite=None):
+    def __init__(self, name, coordinates, region, population, tourism, economy, obj_name="city",
+                 sprite=None, shortname=""):
         super(City, self).__init__(x=coordinates[0], y=coordinates[1], sprite=sprite)
         self.obj_name = obj_name
         self.economy = economy
@@ -15,9 +19,42 @@ class City(sge.dsp.Object):
         self.population = population
         self.region = region
         self.city_name = name
+        self.shortname = shortname
+
     def get_name(self):
         return self.obj_name
 
+def create_cities():
+    if city_list is None or len(city_list) == 0:
+        with open("City_Master_List.csv", "r") as f:
+            cities = csv.reader(f, dialect='excel')
+            cityiter = iter(cities)
+            next(cityiter)
+            i = 0
+            for l in cityiter:
+                name = l[0] + "\n" + l[1]
+                coordinates = tuple(l[2].split(","))
+                region = l[3]
+                population = l[4]
+                tourism = l[5]
+                economy = l[6]
+                shortname = l[7]
+                city_dot = sge.gfx.Sprite(width=10, height=10)
+                city_dot.draw_ellipse(0, 0, city_dot.width, city_dot.height, fill=sge.gfx.Color("green"))
+                city = City(name, coordinates, region, population, tourism, economy,
+                                      shortname=shortname, sprite=city_dot)
+                city_list.append(city)
+                if region in city_dict:
+                    city_dict[region].append(city)
+                else:
+                    city_dict[region] = [city]
+                i += 1
+        global_values.city_dict = city_dict
+        global_values.city_list = city_list
+    return city_list
+
+if __name__ == '__main__':
+    create_cities()
 
 class City_Room(sge.dsp.Room):
 

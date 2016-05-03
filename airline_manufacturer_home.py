@@ -62,8 +62,8 @@ def create_room():
     airline_name.draw_text(text_font, global_values.player.airline_name, 0, 0, color=sge.gfx.Color("red"))
     airline_cash.draw_text(text_font, '${:0,}K'.format(global_values.player.money2), 0, 0, color=sge.gfx.Color("red"))
 
-    boeing_object = sge.dsp.Object(20, 150, z=1, sprite=boeing_logo)
-    airbus_object = sge.dsp.Object(580, 140, z=1, sprite=airbus_logo)
+    boeing_object = sge.dsp.Object(20, 190, z=1, sprite=boeing_logo)
+    airbus_object = sge.dsp.Object(730, 170, z=1, sprite=airbus_logo)
     tupolev_object = sge.dsp.Object(sge.game.width - tupolev_logo.width, 40, z=1, sprite=tupolev_logo)
     object_list = [boeing_object, airbus_object, tupolev_object]
 
