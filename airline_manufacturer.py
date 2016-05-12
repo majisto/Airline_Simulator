@@ -37,7 +37,7 @@ class Manufacturer(sge.dsp.Room):
             if "name" in vars(obj) and type(obj) == sge.dsp.Object:
                 if obj.name == "range":
                     obj.sprite.draw_clear()
-                    obj.sprite.draw_text(city_font, plane.distance + " mi", 0, 0, color=sge.gfx.Color("black"))
+                    obj.sprite.draw_text(city_font, str(plane.distance) + " mi", 0, 0, color=sge.gfx.Color("black"))
                 if obj.name == "name":
                     obj.sprite.draw_clear()
                     obj.sprite.draw_text(city_font, "{0}-{1} ({2})".format(plane.model, plane.variant, plane.first_flight), 0, 0,

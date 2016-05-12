@@ -26,6 +26,8 @@ class Region_Room(sge.dsp.Room):
                         obj.sprite.draw_rectangle(0, 0, obj.sprite.width, obj.sprite.height, outline=sge.gfx.Color("white"),
                               outline_thickness=3)
                         self.new_route_on = False
+        if char == "h":
+            print global_values.player.hangar
 
     def event_room_resume(self):
         if not self.music.playing:
@@ -95,11 +97,16 @@ def create_room():
                           sprite=prompt, obj_name="prompt", z=2)
     route_prompt_global = prompt_object
     ticket_global = ticket_object
-
-    object_list = [global_values.city_list[0], global_values.city_list[1], global_values.city_list[2],
-                   factory_object, ticket_object, prompt_object]
+    object_list = get_cities()
+    object_list.extend((factory_object, ticket_object, prompt_object))
     layers = [sge.gfx.BackgroundLayer(background_map, 0, 0, -1000), name_layer,
               sge.gfx.BackgroundLayer(airline_cash, sge.game.width - airline_cash.width,
                                       background_map.height, 1)]
     background = sge.gfx.Background(layers, sge.gfx.Color("white"))
     return Region_Room(background=background, objects=object_list)
+
+def get_cities():
+    o_list = []
+    for local_city in global_values.city_list:
+        o_list.append(local_city)
+    return o_list

@@ -1,5 +1,6 @@
 import os
 
+debug = True
 room_list = [] #All active rooms
 city_list = [] #All Cities
 city_dict = {} #Cities by region
@@ -10,6 +11,7 @@ plane_shortname_dict = {} #Maps plane shortnames to plane objects
 manufacturer_list = set()
 game = None #Game Object
 text_font = None
+cash_font = None
 text_color = None
 small_text_font = None
 player = None

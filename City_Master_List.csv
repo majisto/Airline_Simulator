@@ -1,4 +1,5 @@
 name,country,coordinates,region,population,tourism,economy,shortname,latitude
 "Austin, TX",United States,"420,392",NA,2,65,85,austxus,"30.267153,-97.7431"
-"New York, NY",United States,"742,186",NA,18,60,80,nynyus,"40.712784,-74.005941"
+"New York, NY",United States,"742,186",NA,18,60,80,newnyus,"40.712784,-74.005941"
 "Houston, TX",United States,"440,415",NA,8,55,85,houtxus,"29.760427, -95.369803"
+"Honolulu, HI",United States,"65,469",NA,1,90,60,honhius,"21.306944, -157.858333"

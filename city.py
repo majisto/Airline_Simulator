@@ -19,7 +19,7 @@ class City(sge.dsp.Object):
         self.tourism = tourism
         self.population = population
         self.region = region
-        self.city_name = name
+        self.full_name = name
         self.lat_long = lat_long
         self.shortname = shortname
 
@@ -79,12 +79,12 @@ class City_Room(sge.dsp.Room):
                     obj.sprite.draw_clear()
                     obj.sprite.draw_text(global_values.text_font, str(self.city.economy), 0, 0,
                                          color=sge.gfx.Color("black"))
-                elif obj.name == "city_name":
+                elif obj.name == "full_name":
                     obj.sprite.draw_clear()
                     city_font = sge.gfx.Font("droid sans mono", size=40)
                     obj.sprite.draw_rectangle(0, 0, obj.sprite.width, obj.sprite.height ,
                                               outline=sge.gfx.Color("gray"), outline_thickness=2)
-                    obj.sprite.draw_text(city_font, self.city.city_name, global_values.game.width / 3,0,
+                    obj.sprite.draw_text(city_font, self.city.full_name, global_values.game.width / 3,0,
                                          color=sge.gfx.Color("black"))
                 elif obj.name == "tour":
                     obj.sprite.draw_clear()
@@ -125,7 +125,7 @@ def create_city_room(City_Class):
                                            100, z=1, sprite=economy_number)
     economy_number_object.name = "econ"
     city_name_object = sge.dsp.Object(0, 0, z=10, sprite=city_name)
-    city_name_object.name = "city_name"
+    city_name_object.name = "full_name"
     flag_object = sge.dsp.Object(0,0, z=11, sprite=country_flag)
     flag_object.name = "flag"
     # tourism_object = sge.dsp.Object(economy_number_object.x + economy_number_object.bbox_width + 50, economy_number_object.y, sprite=tourism_icon)
