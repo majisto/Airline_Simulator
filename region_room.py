@@ -27,7 +27,7 @@ class Region_Room(sge.dsp.Room):
                               outline_thickness=3)
                         self.new_route_on = False
         if char == "h":
-            print global_values.player.hangar
+            print (global_values.player.hangar)
 
     def event_room_resume(self):
         if not self.music.playing:

@@ -35,6 +35,8 @@ class Launch_Room(sge.dsp.Room):
             global_values.room_list.append(Main_Room)
             global_values.room_dict["region"] = Main_Room
             global_values.plane_list = planes.get_plane_list()
+            p.hangar["b7878"] = 2
+            p.hangar["b737100"] = 2
             Main_Room.start()
         self.airline_name.append(char)
         text_box.draw_rectangle(0, 0, text_box.width - 5, text_box.height - 5, outline=sge.gfx.Color("gray")

@@ -6,4 +6,4 @@ class Player(sge.dsp.Object):
         self.money2 = money2
         self.money = money
         self.airline_name = airline_name
-        self.hangar = {}
+        self.hangar = {} #Key: Plane shortname Value: Number of that plane

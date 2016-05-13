@@ -1,7 +1,6 @@
 import csv
 import sge
 import global_values
-import city_distance_estimator
 
 POP_ICON_FILENAME = 'population_icon'
 ECON_ICON_FILENAME = 'economy_icon_cropped'
