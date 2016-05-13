@@ -12,7 +12,7 @@ class Game(sge.dsp.Game):
 
 
 if __name__ == '__main__':
-    Airline_Game = Game(width=1000, height=700, fps=60, window_text="Airline_Simulator")
+    Airline_Game = Game(width=1000, height=700, fps=30, window_text="Airline_Simulator")
     global_values.game = Airline_Game
     global_values.cash_font = sge.gfx.Font("droid sans mono", size=30)
     global_values.text_font = sge.gfx.Font("droid sans mono", size=28)

@@ -11,7 +11,7 @@ from interactive_obj import I_Obj
 
 route_arrow = "route_directional_arrow_cropped"
 class Route(sge.dsp.Object):
-    def __init__(self, city1, city2, distance, plane, fare, flights, num_planes, sales, load):
+    def __init__(self, city1, city2, distance, plane, fare, flights, num_planes, sales=0, load=0):
         super(Route, self).__init__(0, 0, visible=False)
         self.num_planes = num_planes
         self.sales = sales
@@ -35,6 +35,7 @@ class Route_Room(sge.dsp.Room):
         self.current_max_flights = 0
         self.current_flights = 0
         self.num_planes = 1
+        self.fare = calculate_route_price(city1, city2)
         self.city2 = city2
         self.city1 = city1
         self.mode = "plane"
@@ -97,16 +98,23 @@ class Route_Room(sge.dsp.Room):
                     self.current_max_flights = new_flight
                     self.num_planes += 1
                     self.update_plane_box()
+            if obj.obj_name == "launch":
+                route = Route(self.city1, self.city2, self.distance, self.current_plane, self.fare, self.current_flights,
+                              self.num_planes)
+                global_values.player.route_list.append(route)
+                global_values.player.money2 -= self.fare
+                global_values.room_dict["region"].start(transition="pixelate", transition_time=500)
 
     def event_key_press(self, key, char):
+        if key == "b":
+            global_values.room_dict["region"].start(transition="pixelate", transition_time=500)
         if self.mode == "plane":
             if key == "right":
                 self.current_plane = next(self.cycler)
                 self.num_planes = 1
                 self.current_max_flights = flights_per_week(self.current_plane, self.distance)
                 self.Loop_Objects(self.current_plane)
-        if key == "b":
-            global_values.room_dict["region"].start(transition="pixelate", transition_time=500)
+
 
 def create_room(city1, city2):
     distance = calculate_distance(city1, city2)
@@ -116,35 +124,51 @@ def create_room(city1, city2):
         cost_distance_layers(city1, city2, distance, top_bar_layer.sprite.height)
     plane_name_object, seat_object, fuel_object, maint_object, pw_obj, r_obj, cnt_obj = airplane_section()
     total_height = pw_obj.bbox_bottom
-    # num_p_lay, minus_obj, p_box_obj, plus_obj = flights_fare(total_height)
+    num_p_lay, minus_obj, p_box_obj, plus_obj, max_flight, flight_minus, flight_box, flight_plus = flights_fare(total_height)
+    new_height = total_height + flight_box.bbox_bottom
+    button_obj = launch_button(new_height)
 
     layers = [top_bar_layer, first_city_layer, second_city_layer, route_icon_layer, name_layer, cash_layer,
-              dist_icon_layer, dist_number_layer, cost_icon_layer, cost_number_layer, sprite_bar_layer]
+              dist_icon_layer, dist_number_layer, cost_icon_layer, cost_number_layer, sprite_bar_layer, num_p_lay]
     background = sge.gfx.Background(layers, sge.gfx.Color("white"))
     objects = [plane_name_object, seat_object, fuel_object, maint_object, pw_obj, r_obj, cnt_obj,
-               flights_fare(total_height)]
+               max_flight, flight_minus, flight_box, flight_plus, minus_obj, p_box_obj, plus_obj, button_obj]
     return Route_Room(city1, city2, distance, background=background, objects=objects, list_of_planes=plane_list)
 
+def launch_button(height):
+    l_button = sge.gfx.Sprite(width=sge.game.width, height=100)
+    l_button.draw_rectangle(0,0, l_button.width, l_button.height, outline=sge.gfx.Color("blue"), outline_thickness=5)
+    l_button.draw_text(sge.gfx.Font('droid sans mono', size=40), "Launch!", 350, 0, color=sge.gfx.Color("black"))
+    l_button_obj = I_Obj(0, height, sprite=l_button, obj_name="launch")
+    return l_button_obj
+
 def flights_fare(old_height):
+    plane_box = sge.gfx.Sprite(width=200, height=30)
     num_planes = sge.gfx.Sprite(width=200, height=30)
     minus_icon = sge.gfx.Sprite("minus_icon", global_values.graphics_directory)
     plus_icon = sge.gfx.Sprite("plus_icon", global_values.graphics_directory)
-    plane_num_box = sge.gfx.Sprite(width=70, height=30)
-    max_flight = sge.gfx.Sprite(width=200, height=30)
+    plane_num_box = sge.gfx.Sprite(width=30, height=30)
+
+    max_flight = sge.gfx.Sprite(width=300, height=30)
     flight_minus_icon = sge.gfx.Sprite("minus_icon", global_values.graphics_directory)
     flight_plus_icon = sge.gfx.Sprite("plus_icon", global_values.graphics_directory)
-    flight_box = sge.gfx.Sprite(width=70, height=30)
+    flight_box = sge.gfx.Sprite(width=50, height=30)
 
     num_planes.draw_text(global_values.text_font, "Num Planes", 0, 0, color=global_values.text_color)
     num_planes_layer = sge.gfx.BackgroundLayer(num_planes, 0, old_height)
+    flight_box.draw_text(global_values.text_font, "1", 0, 0, color=global_values.text_color)
+    max_flight.draw_text(global_values.text_font, "Flights Max: 14", 0, 0, color=global_values.text_color)
+
+    plane_box_obj = I_Obj(0, old_height, sprite=plane_box, obj_name="plane_box")
     minus_icon_obj = I_Obj(0, old_height + num_planes_layer.sprite.height, sprite=minus_icon, obj_name="plane_minus")
     num_box_obj = I_Obj(minus_icon_obj.bbox_width + ICON_OFFSET, minus_icon_obj.y, sprite=plane_num_box, obj_name="plane_box")
-    plus_icon_obj = I_Obj(num_box_obj.bbox_width + ICON_OFFSET, minus_icon_obj.y, sprite=plus_icon, obj_name="plane_plus")
-    max_flight_obj = I_Obj(num_planes.width + ICON_OFFSET, num_planes_layer.y, sprite=max_flight, obj_name="max_flight")
-    flight_minus = I_Obj(num_planes.width + ICON_OFFSET, old_height + num_planes_layer.sprite.height,
+    plus_icon_obj = I_Obj(num_box_obj.x + num_box_obj.bbox_width, minus_icon_obj.y, sprite=plus_icon, obj_name="plane_plus")
+
+    max_flight_obj = I_Obj(plane_box_obj.bbox_width + ICON_OFFSET, num_planes_layer.y, sprite=max_flight, obj_name="max_flight")
+    flight_minus = I_Obj(plane_box_obj.bbox_width + ICON_OFFSET, old_height + num_planes_layer.sprite.height,
                          sprite=flight_minus_icon, obj_name="flight_minus")
-    flight_box_obj = I_Obj(flight_minus.bbox_width + ICON_OFFSET, minus_icon_obj.y, sprite=flight_box, obj_name="flight_box")
-    flight_plus = I_Obj(flight_box_obj.bbox_width + ICON_OFFSET, minus_icon_obj.y, sprite=flight_plus_icon, obj_name="flight_plus")
+    flight_box_obj = I_Obj(flight_minus.x + flight_minus.bbox_width + ICON_OFFSET, minus_icon_obj.y, sprite=flight_box, obj_name="flight_box")
+    flight_plus = I_Obj(flight_box_obj.x + flight_box_obj.bbox_width, minus_icon_obj.y, sprite=flight_plus_icon, obj_name="flight_plus")
 
     return num_planes_layer, minus_icon_obj, num_box_obj, plus_icon_obj, max_flight_obj, flight_minus\
         , flight_box_obj, flight_plus

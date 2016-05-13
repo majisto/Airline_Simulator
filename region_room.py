@@ -7,7 +7,7 @@ import airline_manufacturer_home
 import city
 import global_values
 
-map_sprite_name = 'usa_canada_islands'
+map_sprite_name = 'usa_canada_islands_jpeg'
 route_prompt_global = None
 ticket_global = None
 class Region_Room(sge.dsp.Room):
@@ -32,10 +32,18 @@ class Region_Room(sge.dsp.Room):
     def event_room_resume(self):
         if not self.music.playing:
             self.music.play(loops=0)
-        self.background.layers[2].sprite.draw_clear()
-        self.background.layers[2].sprite.draw_text(global_values.text_font,
+        self.background.layers[1].sprite.draw_clear()
+        self.background.layers[1].sprite.draw_text(global_values.text_font,
                                                    '${:0,}K'.format(global_values.player.money2)
                                                    , 0, 10, color=sge.gfx.Color("red"))
+        for route in global_values.player.route_list:
+            for obj in self.objects:
+                if type(obj) == I_Obj and obj.obj_name == "map":
+                    # new_sprite = sge.gfx.Sprite(map_sprite_name, global_values.graphics_directory)
+                    obj.sprite.draw_line(x1=route.city1.x + 5, y1= route.city1.y + 5, x2= route.city2.x + 5, y2=route.city2.y + 5,
+                                         color=global_values.text_color, thickness=1)
+                    # obj.sprite = new_sprite
+
 
     def event_mouse_button_press(self, button):
         x_pos = sge.mouse.get_x()
@@ -97,9 +105,10 @@ def create_room():
                           sprite=prompt, obj_name="prompt", z=2)
     route_prompt_global = prompt_object
     ticket_global = ticket_object
+    map_object = I_Obj(0, 0, sprite=background_map, obj_name="map", z=-10)
     object_list = get_cities()
-    object_list.extend((factory_object, ticket_object, prompt_object))
-    layers = [sge.gfx.BackgroundLayer(background_map, 0, 0, -1000), name_layer,
+    object_list.extend((factory_object, ticket_object, prompt_object, map_object))
+    layers = [name_layer,
               sge.gfx.BackgroundLayer(airline_cash, sge.game.width - airline_cash.width,
                                       background_map.height, 1)]
     background = sge.gfx.Background(layers, sge.gfx.Color("white"))
