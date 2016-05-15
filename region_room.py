@@ -55,21 +55,27 @@ class Region_Room(sge.dsp.Room):
                 if not self.new_route_on:
                     City_Room = city.create_city_room(obj)
                     City_Room.start(transition="pixelate", transition_time=500)
-                elif len(self.route_list) < 1: #Save city.
-                    self.route_list.append(obj)
-                    obj.sprite.draw_rectangle(0, 0, obj.sprite.width, obj.sprite.height, outline=sge.gfx.Color("blue"),
-                                          outline_thickness=3)
-                else: #Two cities makes a route.
-                    self.route_list.append(obj)
-                    self.route_list[0].sprite.draw_clear()
-                    self.route_list[0].sprite.draw_ellipse(0, 0, self.route_list[0].sprite.width,
-                                                self.route_list[0].sprite.height, fill=sge.gfx.Color("green"))
+                else:
                     route_prompt_global.sprite.draw_clear()
-                    ticket_global.sprite.draw_rectangle(0, 0, ticket_global.sprite.width, ticket_global.sprite.height, outline=sge.gfx.Color("white"),
-                                              outline_thickness=3)
-                    Route_Room = routes.create_room(self.route_list[0], self.route_list[1])
-                    self.route_list = []
+                    ticket_global.sprite.draw_rectangle(0, 0, ticket_global.sprite.width, ticket_global.sprite.height,
+                                                        outline=sge.gfx.Color("white"), outline_thickness=3)
+                    Route_Room = routes.create_room(self.get_hub_city(), obj)
                     Route_Room.start()
+                # elif len(self.route_list) < 1: #Save city.
+                #     self.route_list.append(obj)
+                #     obj.sprite.draw_rectangle(0, 0, obj.sprite.width, obj.sprite.height, outline=sge.gfx.Color("blue"),
+                #                           outline_thickness=3)
+                # else: #Two cities makes a route.
+                #     self.route_list.append(obj)
+                #     self.route_list[0].sprite.draw_clear()
+                #     self.route_list[0].sprite.draw_ellipse(0, 0, self.route_list[0].sprite.width,
+                #                                 self.route_list[0].sprite.height, fill=sge.gfx.Color("green"))
+                #     route_prompt_global.sprite.draw_clear()
+                #     ticket_global.sprite.draw_rectangle(0, 0, ticket_global.sprite.width, ticket_global.sprite.height, outline=sge.gfx.Color("white"),
+                #                               outline_thickness=3)
+                #     Route_Room = routes.create_room(self.route_list[0], self.route_list[1])
+                #     self.route_list = []
+                #     Route_Room.start()
             elif obj_name == "factory":
                 Next_Room = airline_manufacturer_home.create_room()
                 global_values.room_list.append(Next_Room)
@@ -78,8 +84,11 @@ class Region_Room(sge.dsp.Room):
                 obj.sprite.draw_rectangle(0, 0, obj.sprite.width, obj.sprite.height, outline=sge.gfx.Color("blue"),
                                           outline_thickness=3)
                 route_prompt_global.sprite.draw_text(global_values.small_text_font,
-                        "Please select a starting and destination city.", 0, 0, color=sge.gfx.Color("black"))
+                        "Route starts from {0}.  Please select a destination.".format(self.get_hub_city().name_no_country), 0, 0, color=sge.gfx.Color("black"))
                 self.new_route_on = True
+    def get_hub_city(self):
+        assert "region_name" in vars(self)
+        return global_values.city_shortname_dict[global_values.player.hubs[self.region_name]]
 
 def create_room():
     global route_prompt_global
@@ -91,7 +100,7 @@ def create_room():
     factory = sge.gfx.Sprite("factory_cropped", global_values.graphics_directory)
     ticket = sge.gfx.Sprite("ticket_cropped", global_values.graphics_directory)
     background_map = sge.gfx.Sprite(map_sprite_name, global_values.graphics_directory)
-    prompt = sge.gfx.Sprite(width=700, height=50)
+    prompt = sge.gfx.Sprite(width=750, height=50)
 
     airline_name.draw_text(cash_font, global_values.player.airline_name, 0, 10, color=sge.gfx.Color("red"))
     airline_cash.draw_text(cash_font, '${:0,}K'.format(global_values.player.money2), 0, 10, color=sge.gfx.Color("red"),

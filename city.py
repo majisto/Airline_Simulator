@@ -7,12 +7,14 @@ ECON_ICON_FILENAME = 'economy_icon_cropped'
 
 city_list = []
 city_dict = {}
+city_shortname_dict = {}
 
 class City(sge.dsp.Object):
 
-    def __init__(self, name, coordinates, region, population, tourism, economy, lat_long,
+    def __init__(self, name, coordinates, region, population, tourism, economy, lat_long, name_no_country,
                  obj_name="city", sprite=None, shortname=""):
         super(City, self).__init__(x=coordinates[0], y=coordinates[1], sprite=sprite)
+        self.name_no_country = name_no_country
         self.obj_name = obj_name
         self.economy = economy
         self.tourism = tourism
@@ -32,6 +34,7 @@ def create_cities():
             cityiter = iter(cities)
             next(cityiter)
             for l in cityiter:
+                name_no_country = l[0]
                 name = l[0] + "\n" + l[1]
                 #Cast to int because they are read in as string.  I spent way too many hours debuggin this!
                 coordinates = tuple([int(i) for i in l[2].split(",")])
@@ -43,7 +46,7 @@ def create_cities():
                 lat_long = tuple([float(i) for i in l[8].split(",")])
                 city_dot = sge.gfx.Sprite(width=10, height=10)
                 city_dot.draw_ellipse(0, 0, city_dot.width, city_dot.height, fill=sge.gfx.Color("green"))
-                city = City(name, coordinates, region, population, tourism, economy, lat_long,
+                city = City(name, coordinates, region, population, tourism, economy, lat_long, name_no_country,
                                       shortname=shortname, sprite=city_dot)
                 city_list.append(city)
                 if region in city_dict:
@@ -52,6 +55,9 @@ def create_cities():
                     city_dict[region] = [city]
         global_values.city_dict = city_dict
         global_values.city_list = city_list
+        for city in city_list:
+            city_shortname_dict[city.shortname] = city
+        global_values.city_shortname_dict = city_shortname_dict
     return city_list
 
 if __name__ == '__main__':

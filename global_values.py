@@ -5,6 +5,7 @@ room_list = [] #All active rooms
 city_list = [] #All Cities
 city_dict = {} #Cities by region
 room_dict = {}
+city_shortname_dict = {}
 plane_list = [] #All list_of_planes possible
 manufacturer_dict = {} #Key: Manufacturer, Value: List of list_of_planes under manufacturer
 plane_shortname_dict = {} #Maps plane shortnames to plane objects

@@ -30,8 +30,10 @@ class Launch_Room(sge.dsp.Room):
             return
         elif key == "enter":
             p = player.Player("1,000,000K", ''.join(self.airline_name), 1000000)
+            p.hubs["NA"] = "austxus"
             global_values.player = p
             Main_Room = region_room.create_room()
+            Main_Room.region_name = "NA"
             global_values.room_list.append(Main_Room)
             global_values.room_dict["region"] = Main_Room
             global_values.plane_list = planes.get_plane_list()
