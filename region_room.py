@@ -33,17 +33,18 @@ class Region_Room(sge.dsp.Room):
     def event_room_resume(self):
         if not self.music.playing:
             self.music.play(loops=0)
+        self.update_cash_display()
+        for route in global_values.player.route_list:
+            for obj in self.objects:
+                if type(obj) == I_Obj and obj.obj_name == "map":
+                    obj.sprite.draw_line(x1=route.city1.x + 5, y1= route.city1.y + 5, x2= route.city2.x + 5, y2=route.city2.y + 5,
+                                         color=global_values.text_color, thickness=1)
+
+    def update_cash_display(self):
         self.background.layers[1].sprite.draw_clear()
         self.background.layers[1].sprite.draw_text(global_values.text_font,
                                                    '${:0,}K'.format(global_values.player.money2)
                                                    , 0, 10, color=sge.gfx.Color("red"))
-        for route in global_values.player.route_list:
-            for obj in self.objects:
-                if type(obj) == I_Obj and obj.obj_name == "map":
-                    # new_sprite = sge.gfx.Sprite(map_sprite_name, global_values.graphics_directory)
-                    obj.sprite.draw_line(x1=route.city1.x + 5, y1= route.city1.y + 5, x2= route.city2.x + 5, y2=route.city2.y + 5,
-                                         color=global_values.text_color, thickness=1)
-                    # obj.sprite = new_sprite
 
     def check_route_exists(self, dest_city):
         for rt in global_values.player.route_list:
@@ -72,21 +73,6 @@ class Region_Room(sge.dsp.Room):
                     except ValueError:
                         return
                     Route_Room.start()
-                # elif len(self.route_list) < 1: #Save city.
-                #     self.route_list.append(obj)
-                #     obj.sprite.draw_rectangle(0, 0, obj.sprite.width, obj.sprite.height, outline=sge.gfx.Color("blue"),
-                #                           outline_thickness=3)
-                # else: #Two cities makes a route.
-                #     self.route_list.append(obj)
-                #     self.route_list[0].sprite.draw_clear()
-                #     self.route_list[0].sprite.draw_ellipse(0, 0, self.route_list[0].sprite.width,
-                #                                 self.route_list[0].sprite.height, fill=sge.gfx.Color("green"))
-                #     route_prompt_global.sprite.draw_clear()
-                #     ticket_global.sprite.draw_rectangle(0, 0, ticket_global.sprite.width, ticket_global.sprite.height, outline=sge.gfx.Color("white"),
-                #                               outline_thickness=3)
-                #     Route_Room = routes.create_room(self.route_list[0], self.route_list[1])
-                #     self.route_list = []
-                #     Route_Room.start()
             elif obj_name == "factory":
                 Next_Room = airline_manufacturer_home.create_room()
                 global_values.room_list.append(Next_Room)
@@ -97,6 +83,9 @@ class Region_Room(sge.dsp.Room):
                 route_prompt_global.sprite.draw_text(global_values.small_text_font,
                         "Route starts from {0}.  Please select a destination.".format(self.get_hub_city().name_no_country), 0, 0, color=sge.gfx.Color("black"))
                 self.new_route_on = True
+            elif obj_name == "end":
+                calculate_profit()
+                self.update_cash_display()
     def get_hub_city(self):
         assert "region_name" in vars(self)
         return global_values.city_shortname_dict[global_values.player.hubs[self.region_name]]
@@ -110,6 +99,7 @@ def create_room():
     cash_font = sge.gfx.Font("droid sans mono", size=30)
     factory = sge.gfx.Sprite("factory_cropped", global_values.graphics_directory)
     ticket = sge.gfx.Sprite("ticket_cropped", global_values.graphics_directory)
+    end_turn = sge.gfx.Sprite("end_button", global_values.graphics_directory)
     background_map = sge.gfx.Sprite(map_sprite_name, global_values.graphics_directory)
     prompt = sge.gfx.Sprite(width=750, height=50)
 
@@ -121,18 +111,32 @@ def create_room():
     factory_object = I_Obj(name_layer.x + name_layer.sprite.width, name_layer.y, sprite=factory, obj_name="factory")
     ticket_object = I_Obj(factory_object.x + factory_object.bbox_width + global_values.ICON_OFFSET,
                           factory_object.y, sprite=ticket, obj_name="ticket")
+    end_turn_object = I_Obj(ticket_object.x + ticket_object.bbox_width + global_values.ICON_OFFSET, factory_object.y,
+                            sprite=end_turn, obj_name="end")
     prompt_object = I_Obj(200, sge.game.height - airline_name.height - prompt.height,
                           sprite=prompt, obj_name="prompt", z=2)
     route_prompt_global = prompt_object
     ticket_global = ticket_object
     map_object = I_Obj(0, 0, sprite=background_map, obj_name="map", z=-10)
     object_list = get_cities()
-    object_list.extend((factory_object, ticket_object, prompt_object, map_object))
+    object_list.extend((factory_object, ticket_object, prompt_object, map_object, end_turn_object))
     layers = [name_layer,
               sge.gfx.BackgroundLayer(airline_cash, sge.game.width - airline_cash.width,
                                       background_map.height, 1)]
     background = sge.gfx.Background(layers, sge.gfx.Color("white"))
     return Region_Room(background=background, objects=object_list)
+
+def calculate_profit():
+    for route in global_values.player.route_list:
+        total_seats = int(route.plane.seats) * route.num_planes
+        total_passengers = int(routes.calculate_total_passengers(route.city1, route.city2))
+        if total_passengers >= total_seats:
+            sales = route.fare * total_seats
+        else:
+            sales = route.fare * (total_seats - total_passengers)
+        global_values.player.money2 += sales
+        if global_values.debug:
+            print ("Total sales is {0} on route to {1}".format(sales, route.city2.name_no_country))
 
 def get_cities():
     o_list = []
