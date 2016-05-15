@@ -1,13 +1,12 @@
 from itertools import cycle
 
 import sge
+from geopy.distance import vincenty
 
+import global_values
 import planes
 from city import City
 from global_values import ICON_OFFSET
-import global_values
-from geopy.distance import vincenty
-
 from interactive_obj import I_Obj
 
 number_keys = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
@@ -141,6 +140,7 @@ class Route_Room(sge.dsp.Room):
                               self.num_planes)
                 global_values.player.route_list.append(route)
                 global_values.player.money2 -= self.fare
+                global_values.player.hangar[self.current_plane.short_name] -= self.num_planes
                 global_values.room_dict["region"].start(transition="pixelate", transition_time=500)
             if obj.obj_name == "fare_num":
                 self.fare_mode = True
@@ -181,8 +181,10 @@ class Route_Room(sge.dsp.Room):
 
 def create_room(city1, city2):
     distance = calculate_distance(city1, city2)
-    calculate_total_passengers(city1, city2)
     plane_list = valid_planes(distance)
+    if len(plane_list) == 0:
+        raise ValueError
+    calculate_total_passengers(city1, city2)
     first_city_layer, second_city_layer, route_icon_layer, top_bar_layer, name_layer, cash_layer = load_topBar(city1, city2)
     dist_icon_layer, dist_number_layer, cost_icon_layer, cost_number_layer, sprite_bar_layer = \
         cost_distance_layers(city1, city2, distance, top_bar_layer.sprite.height)
@@ -300,15 +302,12 @@ def calculate_distance (city1, city2, miles=True):
     return int(vincenty(city1.lat_long, city2.lat_long).miles if miles else vincenty(city1.lat_long, city2.lat_long).kilometers)
 
 def valid_planes(dist):
-    print (dist)
     valid = []
     for keys in global_values.player.hangar:
         if global_values.player.hangar[keys] > 0:
             # print global_values.plane_shortname_dict[keys].distance
             if int(global_values.plane_shortname_dict[keys].distance) > dist:
                 valid.append(global_values.plane_shortname_dict[keys])
-    for plane in valid:
-        print (plane.model)
     return valid
 
 def cost_distance_layers(city1, city2, distance, prev_height):

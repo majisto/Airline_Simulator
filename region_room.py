@@ -1,11 +1,12 @@
 import os
+
 import sge
 
-import routes
-from interactive_obj import I_Obj
 import airline_manufacturer_home
 import city
 import global_values
+import routes
+from interactive_obj import I_Obj
 
 map_sprite_name = 'usa_canada_islands_jpeg'
 route_prompt_global = None
@@ -44,6 +45,11 @@ class Region_Room(sge.dsp.Room):
                                          color=global_values.text_color, thickness=1)
                     # obj.sprite = new_sprite
 
+    def check_route_exists(self, dest_city):
+        for rt in global_values.player.route_list:
+            if dest_city.shortname in [rt.city1.shortname, rt.city2.shortname]:
+                return True
+        return False
 
     def event_mouse_button_press(self, button):
         x_pos = sge.mouse.get_x()
@@ -56,10 +62,15 @@ class Region_Room(sge.dsp.Room):
                     City_Room = city.create_city_room(obj)
                     City_Room.start(transition="pixelate", transition_time=500)
                 else:
+                    if self.check_route_exists(obj):
+                        return
                     route_prompt_global.sprite.draw_clear()
                     ticket_global.sprite.draw_rectangle(0, 0, ticket_global.sprite.width, ticket_global.sprite.height,
                                                         outline=sge.gfx.Color("white"), outline_thickness=3)
-                    Route_Room = routes.create_room(self.get_hub_city(), obj)
+                    try:
+                        Route_Room = routes.create_room(self.get_hub_city(), obj)
+                    except ValueError:
+                        return
                     Route_Room.start()
                 # elif len(self.route_list) < 1: #Save city.
                 #     self.route_list.append(obj)
