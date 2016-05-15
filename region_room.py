@@ -130,10 +130,17 @@ def calculate_profit():
     for route in global_values.player.route_list:
         total_seats = int(route.plane.seats) * route.num_planes
         total_passengers = int(routes.calculate_total_passengers(route.city1, route.city2))
+        averaging_fare = int(routes.passenger_load_fare(route.fare, route))
         if total_passengers >= total_seats:
-            sales = route.fare * total_seats
+            if averaging_fare > route.fare:
+                sales = route.fare * total_seats
+            else:
+                sales = averaging_fare * total_seats
         else:
-            sales = route.fare * (total_seats - total_passengers)
+            if averaging_fare > route.fare:
+                sales = route.fare * (total_seats - total_passengers)
+            else:
+                sales = averaging_fare * (total_seats - total_passengers)
         global_values.player.money2 += sales
         if global_values.debug:
             print ("Total sales is {0} on route to {1}".format(sales, route.city2.name_no_country))

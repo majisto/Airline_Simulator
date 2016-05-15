@@ -355,7 +355,7 @@ def calculate_total_passengers(city1, city2):
     assert isinstance(city2, City)
     city1_factor =  1.5 * (city1.tourism / 100.0) + 1.3 * (city1.population / 100.0) + 1.2 * (city1.economy / 100.0)
     city2_factor =  1.5 * (city2.tourism / 100.0) + 1.3 * (city2.population / 100.0) + 1.2 * (city2.economy / 100.0)
-    print ("Total passengers for route: {0}".format(base * city1_factor * city2_factor))
+    print ("Total passengers for route to {0}: {1}".format(city2.name_no_country, int(base * city1_factor * city2_factor)))
     return base * city1_factor * city2_factor
 
 def calculate_route_price(source_city, destination_city):
