@@ -1,4 +1,5 @@
 import os
+from math import atan2, degrees, pi
 
 import sge
 
@@ -20,13 +21,6 @@ class Region_Room(sge.dsp.Room):
         self.route_list = []
 
     def event_key_press(self, key, char):
-        if char == "s":
-            for obj in self.objects:
-                if type(obj) == I_Obj:
-                    if obj.get_name() == "ticket":
-                        obj.sprite.draw_rectangle(0, 0, obj.sprite.width, obj.sprite.height, outline=sge.gfx.Color("white"),
-                              outline_thickness=3)
-                        self.new_route_on = False
         if char == "h":
             print (global_values.player.hangar)
 
@@ -35,6 +29,8 @@ class Region_Room(sge.dsp.Room):
             self.music.play(loops=0)
         self.update_cash_display()
         for route in global_values.player.route_list:
+            angle = calculate_angle(route)
+            Plane_Sprite.create(route.city1.x, route.city1.y, route.city2, rotation=angle + 45, direction=angle)
             for obj in self.objects:
                 if type(obj) == I_Obj and obj.obj_name == "map":
                     obj.sprite.draw_line(x1=route.city1.x + 5, y1= route.city1.y + 5, x2= route.city2.x + 5, y2=route.city2.y + 5,
@@ -65,6 +61,7 @@ class Region_Room(sge.dsp.Room):
                 else:
                     if self.check_route_exists(obj):
                         return
+                    self.new_route_on = False
                     route_prompt_global.sprite.draw_clear()
                     ticket_global.sprite.draw_rectangle(0, 0, ticket_global.sprite.width, ticket_global.sprite.height,
                                                         outline=sge.gfx.Color("white"), outline_thickness=3)
@@ -89,6 +86,22 @@ class Region_Room(sge.dsp.Room):
     def get_hub_city(self):
         assert "region_name" in vars(self)
         return global_values.city_shortname_dict[global_values.player.hubs[self.region_name]]
+
+class Plane_Sprite(sge.dsp.Object):
+
+    def __init__(self, x, y, dest_city, rotation, direction):
+        plane_sprite = sge.gfx.Sprite("plane_sprite_jpeg", global_values.graphics_directory)
+        super(Plane_Sprite, self).__init__(x, y, sprite=plane_sprite, image_rotation=rotation, checks_collisions=True,
+                                           collision_precise=True, xvelocity=5, yvelocity=5)
+        self.dest_city = dest_city
+        self.move_direction = direction
+
+    def event_collision(self, other, xdirection, ydirection):
+        print "X : {0}".format(xdirection)
+        print ydirection
+        if isinstance(other, city.City):
+            if self.dest_city is other:
+                self.destroy()
 
 def create_room():
     global route_prompt_global
@@ -144,6 +157,14 @@ def calculate_profit():
         global_values.player.money2 += sales
         if global_values.debug:
             print ("Total sales is {0} on route to {1}".format(sales, route.city2.name_no_country))
+
+def calculate_angle(route):
+    dx = route.city2.x - route.city1.x
+    dy = route.city2.y - route.city1.y
+    rads = atan2(dy, dx)
+    rads %= 2 * pi
+    degs = degrees(rads)
+    return degs
 
 def get_cities():
     o_list = []
