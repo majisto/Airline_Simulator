@@ -35,8 +35,9 @@ class Region_Room(sge.dsp.Room):
             if isinstance(obj, Plane_Sprite):
                 self.remove(obj)
         for route in global_values.player.route_list:
-            angle = calculate_angle(route)
-            Plane_Sprite.create(route.city1.x, route.city1.y, route.city2, route.city1, rotation=angle + 45, direction=angle)
+            if route.distance > 200:
+                angle = calculate_angle(route)
+                Plane_Sprite.create(route.city1.x, route.city1.y, route.city2, route.city1, rotation=angle + 45, direction=angle)
             for obj in self.objects:
                 if type(obj) == I_Obj and obj.obj_name == "map":
                     obj.sprite.draw_line(x1=route.city1.x + 5, y1= route.city1.y + 5, x2= route.city2.x + 5, y2=route.city2.y + 5,
@@ -98,7 +99,7 @@ class Plane_Sprite(sge.dsp.Object):
     def __init__(self, x, y, dest_city, origin_city, rotation, direction):
         plane_sprite = sge.gfx.Sprite("plane_sprite_jpeg", global_values.graphics_directory)
         super(Plane_Sprite, self).__init__(x, y, sprite=plane_sprite, image_rotation=rotation, checks_collisions=True,
-                                           collision_precise=True, xvelocity=3, yvelocity=3)
+                                           collision_precise=True, xvelocity=2.5, yvelocity=2.5)
         self.origin_city = origin_city
         self.dest_city = dest_city
         self.move_direction = direction
