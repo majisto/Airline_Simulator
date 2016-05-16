@@ -19,6 +19,9 @@ class Region_Room(sge.dsp.Room):
         self.music.play(loops=0)
         self.new_route_on = False
         self.route_list = []
+        hub_city = self.get_hub_city()
+        hub_city.sprite.draw_clear()
+        hub_city.sprite.draw_ellipse(0, 0, hub_city.sprite.width, hub_city.sprite.height, fill=sge.gfx.Color((255, 71, 26)))
 
     def event_key_press(self, key, char):
         if char == "h":
@@ -28,9 +31,12 @@ class Region_Room(sge.dsp.Room):
         if not self.music.playing:
             self.music.play(loops=0)
         self.update_cash_display()
+        for obj in self.objects[:]:
+            if isinstance(obj, Plane_Sprite):
+                self.remove(obj)
         for route in global_values.player.route_list:
             angle = calculate_angle(route)
-            Plane_Sprite.create(route.city1.x, route.city1.y, route.city2, rotation=angle + 45, direction=angle)
+            Plane_Sprite.create(route.city1.x, route.city1.y, route.city2, route.city1, rotation=angle + 45, direction=angle)
             for obj in self.objects:
                 if type(obj) == I_Obj and obj.obj_name == "map":
                     obj.sprite.draw_line(x1=route.city1.x + 5, y1= route.city1.y + 5, x2= route.city2.x + 5, y2=route.city2.y + 5,
@@ -89,19 +95,25 @@ class Region_Room(sge.dsp.Room):
 
 class Plane_Sprite(sge.dsp.Object):
 
-    def __init__(self, x, y, dest_city, rotation, direction):
+    def __init__(self, x, y, dest_city, origin_city, rotation, direction):
         plane_sprite = sge.gfx.Sprite("plane_sprite_jpeg", global_values.graphics_directory)
         super(Plane_Sprite, self).__init__(x, y, sprite=plane_sprite, image_rotation=rotation, checks_collisions=True,
-                                           collision_precise=True, xvelocity=5, yvelocity=5)
+                                           collision_precise=True, xvelocity=3, yvelocity=3)
+        self.origin_city = origin_city
         self.dest_city = dest_city
         self.move_direction = direction
+        self.moving_to = dest_city
 
     def event_collision(self, other, xdirection, ydirection):
-        print "X : {0}".format(xdirection)
-        print ydirection
         if isinstance(other, city.City):
-            if self.dest_city is other:
-                self.destroy()
+            if self.dest_city is other and self.moving_to is other:
+                self.move_direction -= 180
+                self.image_rotation -= 180
+                self.moving_to = self.origin_city
+            if self.origin_city is other and self.moving_to is other:
+                self.move_direction -= 180
+                self.image_rotation -= 180
+                self.moving_to = self.dest_city
 
 def create_room():
     global route_prompt_global

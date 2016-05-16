@@ -204,7 +204,7 @@ def create_room(city1, city2):
 def launch_button(height):
     l_button = sge.gfx.Sprite(width=sge.game.width, height=100)
     l_button.draw_rectangle(0,0, l_button.width, l_button.height, outline=sge.gfx.Color("blue"), outline_thickness=5)
-    l_button.draw_text(sge.gfx.Font('droid sans mono', size=40), "Launch!", 350, 0, color=sge.gfx.Color("black"))
+    l_button.draw_text(sge.gfx.Font('droid sans mono', size=60), "Launch!", 350, 20, color=sge.gfx.Color("black"))
     l_button_obj = I_Obj(0, height, sprite=l_button, obj_name="launch")
     return l_button_obj
 
