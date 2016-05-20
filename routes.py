@@ -32,7 +32,8 @@ class Route_Room(sge.dsp.Room):
         self.current_plane = None
         self.cycler = cycle(list_of_planes)
         self.distance = distance
-        self.total_max_flights = 14
+        self.total_max_flights = min(city1.airport.available_flights(global_values.player.airline_name), city2.airport.available_flights(global_values.player.airline_name))
+        # self.total_max_flights = 14
         self.current_max_flights = 1
         self.current_flights = 1
         self.num_planes = 1
@@ -108,8 +109,10 @@ class Route_Room(sge.dsp.Room):
         collied_objects = sge.collision.rectangle(x_pos, y_pos, 0, 0)
         for obj in collied_objects:
             if obj.obj_name == "plane_plus":
+                if self.current_max_flights > self.total_max_flights:
+                    return
                 new_flight = self.current_max_flights + flights_per_week(self.current_plane, self.distance)
-                if new_flight <= self.total_max_flights and self.num_planes < global_values.player.hangar[self.current_plane.short_name]:
+                if self.num_planes < global_values.player.hangar[self.current_plane.short_name]:
                     self.current_max_flights = new_flight
                     self.num_planes += 1
                     self.update_info_boxes()
@@ -122,7 +125,7 @@ class Route_Room(sge.dsp.Room):
                 self.num_planes -= 1
                 self.update_info_boxes()
             if obj.obj_name == "flight_plus":
-                if self.current_flights < self.current_max_flights:
+                if self.current_flights < self.current_max_flights and self.current_flights < self.total_max_flights:
                     self.current_flights += 1
                     self.update_info_boxes()
             if obj.obj_name == "flight_minus":
@@ -138,6 +141,8 @@ class Route_Room(sge.dsp.Room):
                     print ("Current flights: {0}".format(self.current_flights))
                 route = Route(self.city1, self.city2, self.distance, self.current_plane, self.fare, self.current_flights,
                               self.num_planes)
+                self.city1.airport.add_flights(global_values.player.airline_name, self.current_flights)
+                self.city2.airport.add_flights(global_values.player.airline_name, self.current_flights)
                 global_values.player.route_list.append(route)
                 global_values.player.money2 -= self.fare
                 global_values.player.hangar[self.current_plane.short_name] -= self.num_planes
@@ -305,7 +310,6 @@ def valid_planes(dist):
     valid = []
     for keys in global_values.player.hangar:
         if global_values.player.hangar[keys] > 0:
-            # print global_values.plane_shortname_dict[keys].distance
             if int(global_values.plane_shortname_dict[keys].distance) > dist:
                 valid.append(global_values.plane_shortname_dict[keys])
     return valid

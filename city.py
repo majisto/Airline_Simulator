@@ -1,6 +1,9 @@
 import csv
+
 import sge
+
 import global_values
+from interactive_obj import I_Obj
 
 POP_ICON_FILENAME = 'population_icon'
 ECON_ICON_FILENAME = 'economy_icon_cropped'
@@ -8,6 +11,8 @@ ECON_ICON_FILENAME = 'economy_icon_cropped'
 city_list = []
 city_dict = {}
 city_shortname_dict = {}
+base_gate_number = 40
+max_gates = 14
 
 class City(sge.dsp.Object):
 
@@ -23,6 +28,9 @@ class City(sge.dsp.Object):
         self.full_name = name
         self.lat_long = lat_long
         self.shortname = shortname
+        self.airport = Airport(self)
+        if global_values.debug:
+            self.airport.add_gates(global_values.player.airline_name, 5)
 
     def get_name(self):
         return self.obj_name
@@ -95,6 +103,67 @@ class City_Room(sge.dsp.Room):
                     obj.sprite.draw_clear()
                     obj.sprite.draw_text(global_values.text_font, str(self.city.tourism), 0, 0,
                                          color=sge.gfx.Color("black"))
+
+
+class Airport:
+    """
+    Used to keep track of gates for a city.  Manages total gates, gates per airline and expansion
+    .. attribute:: city
+
+        City object the gate will be added to.
+    """
+    def __init__(self, city):
+        self.total_gates = Airport.calculate_total(city)
+        self.total_used = 0
+        self.gate_dict = {}
+
+    @staticmethod
+    def calculate_total(acity):
+        assert isinstance(acity, City)
+        return int(base_gate_number * acity.population + (acity.tourism / 10.0))
+
+    def get_gates(self, airline_name):
+        if airline_name in self.gate_dict:
+            return self.gate_dict[airline_name][1]
+        else:
+            self.gate_dict[airline_name] = [0, 0]
+            return 0
+
+    def get_flights(self, airline_name):
+        if airline_name in self.gate_dict:
+            return self.gate_dict[airline_name][0]
+        else:
+            self.gate_dict[airline_name] = [0, 0]
+            return 0
+
+    def available_flights(self, airline_name):
+        return self.gate_dict[airline_name][1] - self.gate_dict[airline_name][0]
+
+    def available_gates(self, airline_name, hub):
+        if hub:
+            assert airline_name in self.gate_dict
+            if self.total_gates * 0.75 >= self.total_used + max_gates:
+                return int(self.total_gates * 0.75 - self.total_used)
+            else:
+                return 14
+        else:
+            if self.total_gates * 0.5 >= self.total_used + max_gates:
+                return int(self.total_gates * 0.5 - self.total_used)
+            else:
+                return 14
+
+    def add_gates(self, airline_name, num_gates):
+        num_gates = int(num_gates)
+        if airline_name in self.gate_dict:
+            self.gate_dict[airline_name][1] += num_gates
+        else:
+            self.gate_dict[airline_name] = [0, num_gates]
+
+    def add_flights(self, airline_name, num_flights):
+        assert num_flights + self.gate_dict[airline_name][0] <= self.gate_dict[airline_name][1]
+        self.total_used += num_flights
+        self.gate_dict[airline_name][0] += num_flights
+
 def create_city_room(City_Class):
     POP_ICON_POSITION = (0, 100)
     ECON_ICON_POSITION = (sge.game.width / 4, 100)
@@ -110,6 +179,7 @@ def create_city_room(City_Class):
     tourism_number = sge.gfx.Sprite(width=60, height=tourism_icon.height)
     city_name = sge.gfx.Sprite(width=sge.game.width, height=90)
     relation = sge.gfx.Sprite("hand_shake_cropped", global_values.graphics_directory)
+    num_bound_box = sge.gfx.Sprite(width=sge.game.width, height=population_icon.height)
     airline_name = sge.gfx.Sprite(width=200, height=50)
     airline_cash = sge.gfx.Sprite(width=200, height=50)
 
@@ -133,18 +203,37 @@ def create_city_room(City_Class):
     city_name_object.name = "full_name"
     flag_object = sge.dsp.Object(0,0, z=11, sprite=country_flag)
     flag_object.name = "flag"
-    # tourism_object = sge.dsp.Object(economy_number_object.x + economy_number_object.bbox_width + 50, economy_number_object.y, sprite=tourism_icon)
-    # tourism_object.name = "tourism"
     relation_object = sge.dsp.Object(global_values.game.width - 100,0, z=11, sprite=relation)
     relation_object.name = "relation"
     tourism_number_object = sge.dsp.Object(TOURISM_ICON_POSITION[0] + tourism_icon.width + 50, 100
                                            ,sprite=tourism_number)
     tourism_number_object.name = "tour"
+    num_bound_box_obj = I_Obj(0, 100, sprite=num_bound_box, obj_name="numbers_box")
 
     #Bottom Bar Area Objects
-
+    tot_name_obj, tot_gate_obj, fst_name, fst_gate = airport_graphics(num_bound_box_obj.bbox_bottom, City_Class)
 
     object_list = [population_number_object, economy_number_object, city_name_object, flag_object,
-                   relation_object, tourism_number_object]
+                   relation_object, tourism_number_object, tot_name_obj, tot_gate_obj, fst_gate, fst_name]
     background = sge.gfx.Background(layers, sge.gfx.Color("white"))
     return City_Room(City_Class, background=background, objects=object_list)
+
+def airport_graphics(old_height, city):
+    total_gate_name = sge.gfx.Sprite(width=80, height=40)
+    total_gates = sge.gfx.Sprite(width=80, height=100)
+    first_airline = sge.gfx.Sprite(width=200, height=40)
+    first_airline_gates = sge.gfx.Sprite(width=80, height=100)
+
+    first_airline.draw_text(global_values.small_text_font, global_values.player.airline_name, 0, 0, color=global_values.text_color)
+    first_airline_gates.draw_text(global_values.text_font,
+                                  "{0}\n----\n{1}".format(city.airport.get_flights(global_values.player.airline_name), city.airport.get_gates(global_values.player.airline_name))
+                                  , 0, 0, color=global_values.text_color)
+    total_gate_name.draw_text(global_values.small_text_font, "Total", 0, 0, color=global_values.text_color)
+    total_gates.draw_text(global_values.text_font, "{0}\n---\n{1}".format(city.airport.total_used, city.airport.total_gates), 0, 0 , color=global_values.text_color)
+
+    total_gate_name_obj = I_Obj(0, old_height, sprite=total_gate_name, obj_name="total_gate_name")
+    total_gates_obj = I_Obj(0, total_gate_name_obj.bbox_bottom, sprite=total_gates, obj_name="total_gates")
+    first_airline_name_obj = I_Obj(total_gate_name_obj.bbox_width + global_values.ICON_OFFSET, old_height, sprite=first_airline, obj_name="first_airline_name")
+    first_airline_gates_obj = I_Obj(total_gate_name_obj.bbox_width + global_values.ICON_OFFSET, first_airline_name_obj.bbox_bottom, sprite=first_airline_gates, obj_name="first_airline_gates")
+
+    return total_gate_name_obj, total_gates_obj, first_airline_name_obj, first_airline_gates_obj

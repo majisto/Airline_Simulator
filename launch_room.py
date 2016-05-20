@@ -1,5 +1,6 @@
 import sge
 
+import city
 import global_values
 import planes
 import player
@@ -30,13 +31,14 @@ class Launch_Room(sge.dsp.Room):
             p = player.Player("1,000,000K", ''.join(self.airline_name), 1000000)
             p.hubs["NA"] = "austxus"
             global_values.player = p
+            city.create_cities()
             Main_Room = region_room.create_room()
             Main_Room.region_name = "NA"
             global_values.room_list.append(Main_Room)
             global_values.room_dict["region"] = Main_Room
             global_values.plane_list = planes.get_plane_list()
-            p.hangar["b7878"] = 2
-            p.hangar["b737100"] = 2
+            p.hangar["b7878"] = 4
+            p.hangar["b737100"] = 4
             Main_Room.start()
         self.airline_name.append(char)
         text_box.draw_rectangle(0, 0, text_box.width - 5, text_box.height - 5, outline=sge.gfx.Color("gray")
