@@ -141,6 +141,7 @@ class Route_Room(sge.dsp.Room):
                     print ("Current flights: {0}".format(self.current_flights))
                 route = Route(self.city1, self.city2, self.distance, self.current_plane, self.fare, self.current_flights,
                               self.num_planes)
+                global_values.room_dict["region"].create_route_on_map(route)
                 self.city1.airport.add_flights(global_values.player.airline_name, self.current_flights)
                 self.city2.airport.add_flights(global_values.player.airline_name, self.current_flights)
                 global_values.player.route_list.append(route)
