@@ -1,5 +1,7 @@
 import os
+
 import sge
+
 import airline_manufacturer
 import global_values
 
@@ -22,7 +24,7 @@ class Manufacturer_Home (sge.dsp.Room):
     def event_key_press(self, key, char):
         if key == "b":
             sge.snd.Music.stop()
-            global_values.room_dict["region"].start(transition="pixelate", transition_time=500)
+            global_values.room_dict["region"].start()
 
     def event_room_resume(self):
         self.manufacturer_music.play()

@@ -83,7 +83,7 @@ class City_Room(sge.dsp.Room):
 
     def event_key_press(self, key, char):
         if key == "b":
-            global_values.room_dict["region"].start(transition="pixelate", transition_time=500)
+            global_values.room_dict["region"].start()
 
     def event_room_start(self):
         for obj in self.objects:

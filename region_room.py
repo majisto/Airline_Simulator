@@ -83,7 +83,7 @@ class Region_Room(sge.dsp.Room):
             if obj_name == "city":
                 if not self.new_route_on:
                     City_Room = city.create_city_room(obj)
-                    City_Room.start(transition="pixelate", transition_time=500)
+                    City_Room.start()
                 else:
                     if not self.route_check(obj):
                         self.clear_route()
@@ -98,7 +98,7 @@ class Region_Room(sge.dsp.Room):
             elif obj_name == "factory":
                 Next_Room = airline_manufacturer_home.create_room()
                 global_values.room_list.append(Next_Room)
-                Next_Room.start(transition="pixelate", transition_time=500)
+                Next_Room.start()
             elif obj_name == "ticket":
                 obj.sprite.draw_rectangle(0, 0, obj.sprite.width, obj.sprite.height, outline=sge.gfx.Color("blue"),
                                           outline_thickness=3)

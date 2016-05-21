@@ -147,7 +147,7 @@ class Route_Room(sge.dsp.Room):
                 global_values.player.route_list.append(route)
                 global_values.player.money2 -= self.fare
                 global_values.player.hangar[self.current_plane.short_name] -= self.num_planes
-                global_values.room_dict["region"].start(transition="pixelate", transition_time=500)
+                global_values.room_dict["region"].start()
             if obj.obj_name == "fare_num":
                 self.fare_mode = True
                 self.update_fare_number()
@@ -162,7 +162,7 @@ class Route_Room(sge.dsp.Room):
 
     def event_key_press(self, key, char):
         if key == "b":
-            global_values.room_dict["region"].start(transition="pixelate", transition_time=500)
+            global_values.room_dict["region"].start()
         elif key == "right":
             self.current_plane = next(self.cycler)
             self.num_planes = 1
