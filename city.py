@@ -18,7 +18,7 @@ class City(sge.dsp.Object):
 
     def __init__(self, name, coordinates, region, population, tourism, economy, lat_long, name_no_country,
                  obj_name="city", sprite=None, shortname=""):
-        super(City, self).__init__(x=coordinates[0], y=coordinates[1], sprite=sprite)
+        super(City, self).__init__(x=coordinates[0], y=coordinates[1], sprite=sprite, active=False, checks_collisions=False)
         self.name_no_country = name_no_country
         self.obj_name = obj_name
         self.economy = economy

@@ -38,13 +38,18 @@ class Region_Room(sge.dsp.Room):
             if isinstance(obj, Plane_Sprite):
                 self.remove(obj)
         for route in global_values.player.route_list:
-            if route.distance > 200:
-                angle = calculate_angle(route)
-                Plane_Sprite.create(route.city1.x, route.city1.y, route.city2, route.city1, rotation=angle + 45, direction=angle)
-            for obj in self.objects:
-                if type(obj) == I_Obj and obj.obj_name == "map":
-                    obj.sprite.draw_line(x1=route.city1.x + 5, y1= route.city1.y + 5, x2= route.city2.x + 5, y2=route.city2.y + 5,
-                                         color=global_values.text_color, thickness=1)
+            self.create_route_on_map(route)
+
+    def create_route_on_map(self, route):
+        if route.distance > 200:
+            angle = calculate_angle(route)
+            Plane_Sprite.create(route.city1.x, route.city1.y, route.city2, route.city1, rotation=angle + 45,
+                                direction=angle)
+        for obj in self.objects:
+            if type(obj) == I_Obj and obj.obj_name == "map":
+                obj.sprite.draw_line(x1=route.city1.x + 5, y1=route.city1.y + 5, x2=route.city2.x + 5,
+                                     y2=route.city2.y + 5,
+                                     color=global_values.text_color, thickness=1)
 
     def update_cash_display(self): #TODO: Make Cash and Airline Name I_OBJs for easier handling.
         self.background.layers[1].sprite.draw_clear()
@@ -123,7 +128,7 @@ class Plane_Sprite(sge.dsp.Object):
     def __init__(self, x, y, dest_city, origin_city, rotation, direction):
         plane_sprite = sge.gfx.Sprite("plane_sprite_jpeg", global_values.graphics_directory)
         super(Plane_Sprite, self).__init__(x, y, sprite=plane_sprite, image_rotation=rotation, checks_collisions=True,
-                                           collision_precise=True, xvelocity=2.5, yvelocity=2.5)
+                                           xvelocity=2.5, yvelocity=2.5)
         self.origin_city = origin_city
         self.dest_city = dest_city
         self.move_direction = direction
@@ -189,18 +194,20 @@ def create_room():
     name_layer = sge.gfx.BackgroundLayer(airline_name, 0, background_map.height, 1)
     cash_layer = sge.gfx.BackgroundLayer(airline_cash, sge.game.width - airline_cash.width,
                                       background_map.height, 1)
-    factory_object = I_Obj(name_layer.x + name_layer.sprite.width, name_layer.y, sprite=factory, obj_name="factory")
+    factory_object = I_Obj(name_layer.x + name_layer.sprite.width, name_layer.y, sprite=factory, obj_name="factory",
+                           active=False, tangible=False)
     ticket_object = I_Obj(factory_object.x + factory_object.bbox_width + global_values.ICON_OFFSET,
-                          factory_object.y, sprite=ticket, obj_name="ticket")
+                          factory_object.y, sprite=ticket, obj_name="ticket", active=False, tangible=False)
     end_turn_object = I_Obj(ticket_object.x + ticket_object.bbox_width + global_values.ICON_OFFSET, factory_object.y,
-                            sprite=end_turn, obj_name="end")
-    negotiation_obj = I_Obj(end_turn_object.bbox_right + global_values.ICON_OFFSET, factory_object.y, sprite=negotiation, obj_name="negotiation")
+                            sprite=end_turn, obj_name="end", active=False, tangible=False)
+    negotiation_obj = I_Obj(end_turn_object.bbox_right + global_values.ICON_OFFSET, factory_object.y, sprite=negotiation, obj_name="negotiation",
+                            active=False, tangible=False)
     prompt_object = I_Obj(200, sge.game.height - airline_name.height - prompt.height,
                           sprite=prompt, obj_name="prompt", z=2)
     route_prompt_global = prompt_object
     ticket_global = ticket_object #TODO: This is janky.  Figure out a better way than a global.
-    map_object = I_Obj(0, 0, sprite=background_map, obj_name="map", z=-10)
-    date_object = I_Obj(cash_layer.x - date_sprite.width, factory_object.y, sprite=date_sprite, obj_name="date")
+    map_object = I_Obj(0, 0, sprite=background_map, obj_name="map", z=-10, active=False, tangible=False)
+    date_object = I_Obj(cash_layer.x - date_sprite.width, factory_object.y, sprite=date_sprite, obj_name="date", active=False, tangible=False)
 
     object_list = get_cities()
     object_list.extend((factory_object, ticket_object, prompt_object, map_object, end_turn_object, negotiation_obj, date_object))
