@@ -1,4 +1,5 @@
 import os
+import random
 from math import atan2, degrees, pi
 
 import sge
@@ -24,6 +25,8 @@ class Region_Room(sge.dsp.Room):
         hub_city.sprite.draw_ellipse(0, 0, hub_city.sprite.width, hub_city.sprite.height, fill=sge.gfx.Color((255, 71, 26)))
 
     def event_key_press(self, key, char):
+        if char == "b" and self.new_route_on:
+            self.clear_route()
         if char == "h":
             print (global_values.player.hangar)
 
@@ -43,17 +46,28 @@ class Region_Room(sge.dsp.Room):
                     obj.sprite.draw_line(x1=route.city1.x + 5, y1= route.city1.y + 5, x2= route.city2.x + 5, y2=route.city2.y + 5,
                                          color=global_values.text_color, thickness=1)
 
-    def update_cash_display(self):
+    def update_cash_display(self): #TODO: Make Cash and Airline Name I_OBJs for easier handling.
         self.background.layers[1].sprite.draw_clear()
         self.background.layers[1].sprite.draw_text(global_values.text_font,
                                                    '${:0,}K'.format(global_values.player.money2)
                                                    , 0, 10, color=sge.gfx.Color("red"))
+        for obj in self.objects:
+            if type(obj) == I_Obj:
+                if obj.obj_name == "date":
+                    obj.sprite.draw_clear()
+                    obj.sprite.draw_text(global_values.text_font, global_values.game_date.get_date(), 0, 10, color=global_values.text_color)
 
     def check_route_exists(self, dest_city):
         for rt in global_values.player.route_list:
             if dest_city.shortname in [rt.city1.shortname, rt.city2.shortname]:
                 return True
         return False
+
+    def clear_route(self):
+        self.new_route_on = False
+        route_prompt_global.sprite.draw_clear()
+        ticket_global.sprite.draw_rectangle(0, 0, ticket_global.sprite.width, ticket_global.sprite.height,
+                                            outline=sge.gfx.Color("white"), outline_thickness=3)
 
     def event_mouse_button_press(self, button):
         x_pos = sge.mouse.get_x()
@@ -66,15 +80,14 @@ class Region_Room(sge.dsp.Room):
                     City_Room = city.create_city_room(obj)
                     City_Room.start(transition="pixelate", transition_time=500)
                 else:
-                    if self.check_route_exists(obj):
+                    if not self.route_check(obj):
+                        self.clear_route()
                         return
-                    self.new_route_on = False
-                    route_prompt_global.sprite.draw_clear()
-                    ticket_global.sprite.draw_rectangle(0, 0, ticket_global.sprite.width, ticket_global.sprite.height,
-                                                        outline=sge.gfx.Color("white"), outline_thickness=3)
+                    self.clear_route()
                     try:
                         Route_Room = routes.create_room(self.get_hub_city(), obj)
                     except ValueError:
+                        self.clear_route()
                         return
                     Route_Room.start()
             elif obj_name == "factory":
@@ -89,7 +102,18 @@ class Region_Room(sge.dsp.Room):
                 self.new_route_on = True
             elif obj_name == "end":
                 calculate_profit()
+                global_values.game_date.advance_date()
+
                 self.update_cash_display()
+    def route_check(self, dest_city):
+        if self.check_route_exists(dest_city):
+            return False
+        elif self.get_hub_city().airport.available_flights(global_values.player.airline_name) < 1:
+            return False
+        elif dest_city.airport.available_flights(global_values.player.airline_name) < 1:
+            return False
+        else:
+            return True
     def get_hub_city(self):
         assert "region_name" in vars(self)
         return global_values.city_shortname_dict[global_values.player.hubs[self.region_name]]
@@ -116,39 +140,71 @@ class Plane_Sprite(sge.dsp.Object):
                 self.image_rotation -= 180
                 self.moving_to = self.dest_city
 
+class Negotiation:
+    gate_base_cost = 1000
+
+    # Num_Turns: numer of turns for negotiation to work.
+    def __init__(self, num_turns, num_gates, acity, airline_name):
+        self.airline_name = airline_name
+        self.acity = acity
+        self.num_turns = num_turns
+        self.num_gates = num_gates
+        self.cost = Negotiation.gate_base_cost * num_gates
+
+    @staticmethod
+    def buy_gates(acity, airline_name, hub):
+        max_gates = acity.airport.available_gates(airline_name, hub)
+        return max_gates
+
+    def resolve_negotiation(self):
+        self.num_turns -= 1
+        if self.num_turns == 0:
+            self.acity.airport.add_gates(self.airline_name, self.num_gates)
+            return True
+        return False
+
+    def calculate_length(self, acity):
+        return acity.relations + (1 if random.random() < 0.05 else 0)
+
 def create_room():
     global route_prompt_global
     global ticket_global
     # Sprites
     airline_name = sge.gfx.Sprite(width=250, height=50)
     airline_cash = sge.gfx.Sprite(width=200, height=50)
+    date_sprite = sge.gfx.Sprite(width=170, height=50)
     cash_font = sge.gfx.Font("droid sans mono", size=30)
     factory = sge.gfx.Sprite("factory_cropped", global_values.graphics_directory)
     ticket = sge.gfx.Sprite("ticket_cropped", global_values.graphics_directory)
     end_turn = sge.gfx.Sprite("end_button", global_values.graphics_directory)
+    negotiation = sge.gfx.Sprite("negotiation", global_values.graphics_directory)
     background_map = sge.gfx.Sprite(map_sprite_name, global_values.graphics_directory)
     prompt = sge.gfx.Sprite(width=750, height=50)
 
     airline_name.draw_text(cash_font, global_values.player.airline_name, 0, 10, color=sge.gfx.Color("red"))
     airline_cash.draw_text(cash_font, '${:0,}K'.format(global_values.player.money2), 0, 10, color=sge.gfx.Color("red"),
                            halign='left')
+    date_sprite.draw_text(global_values.text_font, global_values.game_date.get_date(), 0, 10, color=global_values.text_color)
 
     name_layer = sge.gfx.BackgroundLayer(airline_name, 0, background_map.height, 1)
+    cash_layer = sge.gfx.BackgroundLayer(airline_cash, sge.game.width - airline_cash.width,
+                                      background_map.height, 1)
     factory_object = I_Obj(name_layer.x + name_layer.sprite.width, name_layer.y, sprite=factory, obj_name="factory")
     ticket_object = I_Obj(factory_object.x + factory_object.bbox_width + global_values.ICON_OFFSET,
                           factory_object.y, sprite=ticket, obj_name="ticket")
     end_turn_object = I_Obj(ticket_object.x + ticket_object.bbox_width + global_values.ICON_OFFSET, factory_object.y,
                             sprite=end_turn, obj_name="end")
+    negotiation_obj = I_Obj(end_turn_object.bbox_right + global_values.ICON_OFFSET, factory_object.y, sprite=negotiation, obj_name="negotiation")
     prompt_object = I_Obj(200, sge.game.height - airline_name.height - prompt.height,
                           sprite=prompt, obj_name="prompt", z=2)
     route_prompt_global = prompt_object
-    ticket_global = ticket_object
+    ticket_global = ticket_object #TODO: This is janky.  Figure out a better way than a global.
     map_object = I_Obj(0, 0, sprite=background_map, obj_name="map", z=-10)
+    date_object = I_Obj(cash_layer.x - date_sprite.width, factory_object.y, sprite=date_sprite, obj_name="date")
+
     object_list = get_cities()
-    object_list.extend((factory_object, ticket_object, prompt_object, map_object, end_turn_object))
-    layers = [name_layer,
-              sge.gfx.BackgroundLayer(airline_cash, sge.game.width - airline_cash.width,
-                                      background_map.height, 1)]
+    object_list.extend((factory_object, ticket_object, prompt_object, map_object, end_turn_object, negotiation_obj, date_object))
+    layers = [name_layer, cash_layer]
     background = sge.gfx.Background(layers, sge.gfx.Color("white"))
     return Region_Room(background=background, objects=object_list)
 

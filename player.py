@@ -7,5 +7,6 @@ class Player(sge.dsp.Object):
         self.money = money
         self.airline_name = airline_name
         self.route_list = []
+        self.negotiation_list = [] #Negotiation objects
         self.hubs = {} #Key: Region Value: City shortname
         self.hangar = {} #Key: Plane shortname Value: Number of that plane

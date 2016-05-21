@@ -29,11 +29,15 @@ class City(sge.dsp.Object):
         self.lat_long = lat_long
         self.shortname = shortname
         self.airport = Airport(self)
+        self.relations = {global_values.player.airline_name:global_values.relation_dict["great"]}
         if global_values.debug:
             self.airport.add_gates(global_values.player.airline_name, 5)
 
     def get_name(self):
         return self.obj_name
+
+    def change_relation(self, airline_name, relation):
+        self.relations[airline_name] = relation
 
 def create_cities():
     if city_list is None or len(city_list) == 0:

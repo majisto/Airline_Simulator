@@ -5,6 +5,7 @@ import global_values
 import planes
 import player
 import region_room
+from events import Game_Date
 
 text_box = None
 prompt = None
@@ -31,6 +32,7 @@ class Launch_Room(sge.dsp.Room):
             p = player.Player("1,000,000K", ''.join(self.airline_name), 1000000)
             p.hubs["NA"] = "austxus"
             global_values.player = p
+            global_values.game_date = Game_Date(2000) #This is the scenario start year.
             city.create_cities()
             Main_Room = region_room.create_room()
             Main_Room.region_name = "NA"

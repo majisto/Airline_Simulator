@@ -23,3 +23,5 @@ boeing_sprite_name = 'boeing_manufacturer_icon'
 airbus_sprite_name = 'airbus_manufacturer_icon'
 tupolev_sprite_name = 'tupolev_manufacturer_icon'
 ICON_OFFSET = 20
+relation_dict = {"great": 1, "friendly": 2, "neutral": 3, "hostile": 4}
+game_date = None
