@@ -13,5 +13,7 @@ can be found [here](http://stellarengine.nongnu.org/index.html).
 
   >Six: https://pypi.python.org/pypi/six
 
+  >Geopy: https://pypi.python.org/pypi/geopy
+
 Once these are installed, you can run **python airline_simulator.py**
  and hopefully things should work.

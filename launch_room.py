@@ -39,6 +39,7 @@ class Launch_Room(sge.dsp.Room):
             global_values.room_list.append(Main_Room)
             global_values.room_dict["region"] = Main_Room
             global_values.plane_list = planes.get_plane_list()
+            #TODO: Move these into an external config file, possibly in Yaml and don't commit it.
             p.hangar["b7878"] = 4
             p.hangar["b737100"] = 4
             Main_Room.start()
