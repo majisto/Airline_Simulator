@@ -22,7 +22,12 @@ class Region_Room(sge.dsp.Room):
         self.route_list = []
         hub_city = self.get_hub_city()
         hub_city.sprite.draw_clear()
-        hub_city.sprite.draw_ellipse(0, 0, hub_city.sprite.width, hub_city.sprite.height, fill=sge.gfx.Color((255, 71, 26)))
+        hub_city.sprite.draw_ellipse(0, 0, 10, 10, fill=sge.gfx.Color((255, 71, 26)))
+        for obj in self.objects:
+            if type(obj) == city.City and obj.obj_name == "city":
+                num_gates = obj.airport.get_gates(global_values.player.airline_name)
+                obj.sprite.draw_text(sge.gfx.Font("droid sans mono", size=14), str(num_gates), 0, 12,
+                                   color=global_values.text_color)
 
     def event_key_press(self, key, char):
         if char == "b" and self.new_route_on:
@@ -110,6 +115,7 @@ class Region_Room(sge.dsp.Room):
                 global_values.game_date.advance_date()
 
                 self.update_cash_display()
+
     def route_check(self, dest_city):
         if self.check_route_exists(dest_city):
             return False
@@ -119,6 +125,7 @@ class Region_Room(sge.dsp.Room):
             return False
         else:
             return True
+
     def get_hub_city(self):
         assert "region_name" in vars(self)
         return global_values.city_shortname_dict[global_values.player.hubs[self.region_name]]
@@ -187,7 +194,7 @@ def create_room():
     prompt = sge.gfx.Sprite(width=750, height=50)
 
     airline_name.draw_text(cash_font, global_values.player.airline_name, 0, 10, color=sge.gfx.Color("red"))
-    airline_cash.draw_text(cash_font, '${:0,}K'.format(global_values.player.money2), 0, 10, color=sge.gfx.Color("red"),
+    airline_cash.draw_text(global_values.text_font, '${:0,}K'.format(global_values.player.money2), 0, 10, color=sge.gfx.Color("red"),
                            halign='left')
     date_sprite.draw_text(global_values.text_font, global_values.game_date.get_date(), 0, 10, color=global_values.text_color)
 
