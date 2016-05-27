@@ -15,6 +15,7 @@ if __name__ == '__main__':
     global_values.cash_font = sge.gfx.Font("droid sans mono", size=30)
     global_values.text_font = sge.gfx.Font("droid sans mono", size=28)
     global_values.small_text_font = sge.gfx.Font('droid sans mono', size=20)
+    global_values.smaller_text_font = sge.gfx.Font('droid sans mono', size=14)
     global_values.text_color = sge.gfx.Color("black")
     Main_Room = launch_room.create_room()
     sge.game.start_room = Main_Room

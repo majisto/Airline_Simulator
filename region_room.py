@@ -1,11 +1,11 @@
 import os
-import random
 from math import atan2, degrees, pi
 
 import sge
 
 import airline_manufacturer_home
 import city
+import events
 import global_values
 import routes
 from interactive_obj import I_Obj
@@ -19,15 +19,20 @@ class Region_Room(sge.dsp.Room):
         self.music = sge.snd.Music(os.path.join(global_values.music_directory, "na_home_music.ogg"))
         self.music.play(loops=0)
         self.new_route_on = False
+        self.negotiation = False
         self.route_list = []
         hub_city = self.get_hub_city()
         hub_city.sprite.draw_clear()
         hub_city.sprite.draw_ellipse(0, 0, 10, 10, fill=sge.gfx.Color((255, 71, 26)))
+        self.update_gate_display()
+
+    def update_gate_display(self):
         for obj in self.objects:
             if type(obj) == city.City and obj.obj_name == "city":
                 num_gates = obj.airport.get_gates(global_values.player.airline_name)
-                obj.sprite.draw_text(sge.gfx.Font("droid sans mono", size=14), str(num_gates), 0, 12,
-                                   color=global_values.text_color)
+                if num_gates > 0:
+                    obj.sprite.draw_text(sge.gfx.Font("droid sans mono", size=14), str(num_gates), 0, 12,
+                                         color=global_values.text_color)
 
     def event_key_press(self, key, char):
         if char == "b" and self.new_route_on:
@@ -87,7 +92,10 @@ class Region_Room(sge.dsp.Room):
             obj_name = obj.get_name()
             if obj_name == "city":
                 if not self.new_route_on:
-                    City_Room = city.create_city_room(obj)
+                    if self.negotiation:
+                        City_Room = city.create_city_room(obj, True)
+                    else:
+                        City_Room = city.create_city_room(obj, False)
                     City_Room.start()
                 else:
                     if not self.route_check(obj):
@@ -113,11 +121,25 @@ class Region_Room(sge.dsp.Room):
             elif obj_name == "end":
                 calculate_profit()
                 global_values.game_date.advance_date()
-
                 self.update_cash_display()
+                events.resolve_negotiations(global_values.player)
+                self.update_gate_display()
+            elif obj_name == "negotiation":
+                if not self.negotiation:
+                    obj.sprite.draw_rectangle(0, 0, obj.sprite.width, obj.sprite.height, outline=sge.gfx.Color("blue"),
+                                          outline_thickness=3)
+                else:
+                    negotiation = sge.gfx.Sprite("negotiation", global_values.graphics_directory)
+                    obj.sprite.draw_clear()
+                    obj.sprite.draw_sprite(negotiation, 0, 0 ,0)
+                self.negotiation = not self.negotiation
+                print (self.negotiation)
 
     def route_check(self, dest_city):
-        if self.check_route_exists(dest_city):
+        if dest_city is self.get_hub_city(): #Can't make a route to itself
+            return False
+        if self.check_route_exists(dest_city): #Must be a new route.  Could use this to edit routes.
+            #TODO: Possible edit routes here?
             return False
         elif self.get_hub_city().airport.available_flights(global_values.player.airline_name) < 1:
             return False
@@ -151,32 +173,6 @@ class Plane_Sprite(sge.dsp.Object):
                 self.move_direction -= 180
                 self.image_rotation -= 180
                 self.moving_to = self.dest_city
-
-class Negotiation:
-    gate_base_cost = 1000
-
-    # Num_Turns: numer of turns for negotiation to work.
-    def __init__(self, num_turns, num_gates, acity, airline_name):
-        self.airline_name = airline_name
-        self.acity = acity
-        self.num_turns = num_turns
-        self.num_gates = num_gates
-        self.cost = Negotiation.gate_base_cost * num_gates
-
-    @staticmethod
-    def buy_gates(acity, airline_name, hub):
-        max_gates = acity.airport.available_gates(airline_name, hub)
-        return max_gates
-
-    def resolve_negotiation(self):
-        self.num_turns -= 1
-        if self.num_turns == 0:
-            self.acity.airport.add_gates(self.airline_name, self.num_gates)
-            return True
-        return False
-
-    def calculate_length(self, acity):
-        return acity.relations + (1 if random.random() < 0.05 else 0)
 
 def create_room():
     global route_prompt_global

@@ -15,6 +15,7 @@ text_font = None
 cash_font = None
 text_color = None
 small_text_font = None
+smaller_text_font = None
 player = None
 graphics_directory = os.path.join(os.path.dirname(__file__), 'graphics')
 music_directory = os.path.join(os.path.dirname(__file__), "music")
